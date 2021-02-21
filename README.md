@@ -1,5 +1,3 @@
-# Name That Summation
-
 ### Team/Client Information
 
 Adam Cogdell (adamc77@live.unc.edu): Game Architect, Client Manager
@@ -17,3 +15,6 @@ Client Meetings: Tuesday @ 2:30PM
 Professor Meetings (recitation): Thursday 3:30-4:30PM
 
 Team Meetings: Monday @ 6:00PM
+
+<img src="https://octodex.github.com/images/jetpacktocat.png"
+height="300">
