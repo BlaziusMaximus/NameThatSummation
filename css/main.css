@@ -430,3 +430,13 @@ footer p+p {
         content: 'at https://github.com/'
     }
 }
+
+iframe.docFrame {
+    width: 100%;
+}
+
+@media screen and (min-width: 11.15in) {
+    iframe.docFrame {
+        width:8.5in;
+    }
+}
