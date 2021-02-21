@@ -21,5 +21,7 @@ Team Meetings: Monday @ 6:00PM
 <style>
 #docFrame {
   border: 0;
+  width: 100%;
+  height: 90vh;
 }
 </style>
