@@ -432,11 +432,14 @@ footer p+p {
 }
 
 iframe.docFrame {
+    border: 0;
     width: 100%;
+    height: 90vh;
 }
 
 @media screen and (min-width: 11.15in) {
     iframe.docFrame {
         width:8.5in;
+        display: block;
     }
 }
