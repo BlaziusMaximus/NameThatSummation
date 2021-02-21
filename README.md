@@ -16,4 +16,10 @@ Professor Meetings (recitation): Thursday 3:30-4:30PM
 
 Team Meetings: Monday @ 6:00PM
 
-<iframe src="https://docs.google.com/document/d/e/2PACX-1vR3nIMv9RltRskz5HY8NZmztMdaF0d1Mfb3Hda5n9-c8VyV_3afAFM-4RU_UVSMI2WajPdJPZLxVgmS/pub?embedded=true"></iframe>
+<iframe src="https://docs.google.com/document/d/e/2PACX-1vR3nIMv9RltRskz5HY8NZmztMdaF0d1Mfb3Hda5n9-c8VyV_3afAFM-4RU_UVSMI2WajPdJPZLxVgmS/pub?embedded=true" id="docFrame"></iframe>
+
+<style>
+#docFrame {
+  border: 0;
+}
+</style>
