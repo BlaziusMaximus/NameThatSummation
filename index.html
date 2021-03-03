@@ -1,48 +1,63 @@
-<html>
-    <head>
-        <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-firestore.js"></script>
-        <link rel="stylesheet" href="styles.css">
-    </head>
-    <body>
-
-        <h1>Name That Summation!</h1>
-
-        <div class="content">
-
-            <form id="add-name-form">
-                <input type="text" name= "name" placeholder=" Nick Name">
-                <button>Add Name</button>
-            </form>
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-            <ul id="players-list"></ul>
+    <title>Name That Summation</title>
 
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header  class="without-description" >
+        <h1>NameThatSummation</h1>
+        
+        <p class="view"><a href="https://github.com/BlaziusMaximus/NameThatSummation">View the Project on GitHub <small></small></a></p>
+        <ul>
+          <li><a href="game/index.html">Go to <strong>Game</strong></a></li>
+          <li><a href="https://github.com/BlaziusMaximus/NameThatSummation">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+
+        <h3 id="teamclient-information">Team/Client Information</h3>
+
+        <p>Adam Cogdell (adamc77@live.unc.edu): Game Architect, Client Manager</p>
+
+        <p>Emre Yanmis (emre61@live.unc.edu): Software Architect</p>
+
+        <p>Tiger Deng (y.deng@unc.edu): Project Manager, Editor</p>
+
+        <p>John Majikes (jmajikes@cs.unc.edu): Client</p>
+
+        <h3 id="meeting-information">Meeting Information</h3>
+
+        <p>Client Meetings: Tuesday @ 2:30PM</p>
+
+        <p>Professor Meetings (recitation): Thursday 3:30-4:30PM</p>
+
+        <p>Team Meetings: Monday @ 6:00PM</p>
+
+        <div class="doc-wrapper">
+        <iframe src="https://docs.google.com/document/d/e/2PACX-1vR3nIMv9RltRskz5HY8NZmztMdaF0d1Mfb3Hda5n9-c8VyV_3afAFM-4RU_UVSMI2WajPdJPZLxVgmS/pub?embedded=true" class="docFrame"></iframe>
         </div>
-            <!-- The core Firebase JS SDK is always required and must be listed first -->
-            <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
+        
+      </section>
+    </div>
+    <footer>
+    
+      <p>Project maintained by <a href="https://github.com/BlaziusMaximus">BlaziusMaximus</a></p>
+    
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
 
-            <!-- TODO: Add SDKs for Firebase products that you want to use
-                https://firebase.google.com/docs/web/setup#available-libraries -->
-            <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-analytics.js"></script>
-
-            <script>
-            // Your web app's Firebase configuration
-            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-            var firebaseConfig = {
-                apiKey: "AIzaSyDwfBL60l_VLABZhv46AEguqmvRXCOC8kA",
-                authDomain: "name-that-summation.firebaseapp.com",
-                databaseURL: "https://name-that-summation-default-rtdb.firebaseio.com",
-                projectId: "name-that-summation",
-                storageBucket: "name-that-summation.appspot.com",
-                messagingSenderId: "740108945726",
-                appId: "1:740108945726:web:e57e1ac26d70092254846f",
-                measurementId: "G-PP750ND5RE"
-            };
-            // Initialize Firebase
-            firebase.initializeApp(firebaseConfig);
-            firebase.analytics();
-            const db = firebase.firestore();
-            db.settings({ timestampsInSnapshots: true }); 
-            </script>
-    </body>
+    
+  </body>
 </html>
