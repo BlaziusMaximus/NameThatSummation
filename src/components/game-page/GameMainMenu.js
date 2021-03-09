@@ -7,11 +7,17 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
+import Modal from 'react-bootstrap/Modal';
 
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 
 
 const GameMainMenu = ({ onGoToTeamClick, onSubmitName }) => {
+
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
+    const handleShowSettings = () => setShowSettingsModal(true);
+    const handleCloseSettings = () => setShowSettingsModal(false);
 
     const handleNameSubmit = (e) => {
         e.preventDefault();
@@ -34,6 +40,28 @@ const GameMainMenu = ({ onGoToTeamClick, onSubmitName }) => {
             </Nav>
             </Navbar.Collapse>
         </Navbar>
+
+        <Button variant="secondary" onClick={handleShowSettings}>Settings</Button>
+        <Modal show={showSettingsModal} onHide={handleCloseSettings} aria-labelledby="contained-modal-title-vcenter" centered>
+            <Modal.Header closeButton>
+            <Modal.Title>Settings</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+            <fieldset>
+                <Form>
+                    <Form.Check type="checkbox" label="Settings Option 1" />
+                    <Form.Check type="checkbox" label="Settings Option 2" />
+                </Form>
+                <Form>
+                    <Form.Check type="radio" label="Settings Option 3" />
+                    <Form.Check type="radio" label="Settings Option 4" />
+                </Form>
+            </fieldset>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseSettings}>Close</Button>
+            </Modal.Footer>
+        </Modal>
 
         <Container>
             <Row className="justify-content-md-center">

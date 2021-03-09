@@ -1,30 +1,23 @@
+import { db } from "./firebase";
+
 import Button from 'react-bootstrap/Button';
 
+import React from 'react';
 import {useState} from 'react';
 
 import TeamPageHeader from './components/team-page/TeamPageHeader';
 import TeamPageBody from './components/team-page/TeamPageBody';
 import GameMainMenu from './components/game-page/GameMainMenu';
 import GameQuestion from './components/game-page/GameQuestion';
+import GameWaitingRoom from './components/game-page/GameWaitingRoom';
+import GameLeaderboard from './components/game-page/GameLeaderboard';
+
+import sample_data from './components/game-page/sample_data';
 
 import './App.css';
 
-// const pageStates = {
-//   TEAM_PAGE: "TEAM_PAGE",
-//   GAME: {
-//     MAIN_MENU: "GAME_MAIN_MENU",
-//     WAITING_ROOM: "GAME_WAITING_ROOM",
-//     QUESTION: "GAME_QUESTION",
-//   },
-// };
-// let pageState = pageStates.TEAM_PAGE;
 
 function App() {
-
-    // const handleGoToGameClick = () => {
-    //   console.log(pageState, pageStates.TEAM_PAGE, pageState===pageStates.TEAM_PAGE)
-    //   pageState = pageStates.GAME.MAIN_MENU;
-    // }
 
     const pageStates = {
         TEAM_PAGE: "TEAM_PAGE",
@@ -32,11 +25,13 @@ function App() {
             MAIN_MENU: "GAME_MAIN_MENU",
             WAITING_ROOM: "GAME_WAITING_ROOM",
             QUESTION: "GAME_QUESTION",
+            LEADERBOARD: "GAME_LEADERBOARD",
+            REVIEW: "GAME_REVIEW",
         },
     };
     const [pageState, setPageState] = useState(pageStates.TEAM_PAGE);
 
-    const [displayName, setDisplayName] = useState("");
+    const [displayName, setDisplayName] = useState("John Doe");
 
     const goToGame = () => {
         setPageState(pageStates.GAME.MAIN_MENU);
@@ -47,10 +42,32 @@ function App() {
     const goToWaitingRoom = (name) => {
         setPageState(pageStates.GAME.WAITING_ROOM);
         setDisplayName(name);
+        db.collection("playersDB").add({
+            name: name,
+            city: 1337
+        })
+        .then((docRef) => {
+            console.log("Document written with ID: ", docRef.id);
+        })
+        .catch((error) => {
+            console.error("Error adding document: ", error);
+        });
     }
     const goToQuestion = () => {
         setPageState(pageStates.GAME.QUESTION);
     }
+    const goToLeaderboard = () => {
+        setPageState(pageStates.GAME.LEADERBOARD);
+    }
+
+    const [players, setPlayers] = useState([]);
+    React.useEffect(() => {
+        const fetchData = async () => {
+            const data = await db.collection("playersDB").get();
+            setPlayers(data.docs.map(doc => doc.data()));
+        }
+        fetchData();
+    });
 
     return (
         <>
@@ -62,16 +79,27 @@ function App() {
 
         {pageState === pageStates.GAME.MAIN_MENU ? <>
         <GameMainMenu onGoToTeamClick={goToTeam} onSubmitName={goToWaitingRoom} />
+        <br />
+        <Button onClick={() => goToWaitingRoom(displayName)}>WAITING ROOM</Button>
+        <Button onClick={goToQuestion}>QUESTION</Button>
+        <Button onClick={goToLeaderboard}>LEADERBOARD</Button>
         </> : <></>}
 
         {pageState === pageStates.GAME.WAITING_ROOM ? <>
-        <h1>WAITING</h1>
-        <h2>Name: {displayName}</h2>
+        <GameWaitingRoom displayName={displayName} playersList={players} />
         <Button onClick={goToQuestion}>QUESTION</Button>
         </> : <></>}
 
         {pageState === pageStates.GAME.QUESTION ? <>
-        <GameQuestion />
+        <GameQuestion displayName={displayName} chartData={sample_data} questionTime={60} endQuestion={goToLeaderboard} />
+        </> : <></>}
+
+        {pageState === pageStates.GAME.LEADERBOARD ? <>
+        <GameLeaderboard displayName={displayName} playersList={players} />
+        </> : <></>}
+
+        {pageState === pageStates.GAME.REVIEW ? <>
+        <GameLeaderboard displayName={displayName} />
         </> : <></>}
         </>
     );
