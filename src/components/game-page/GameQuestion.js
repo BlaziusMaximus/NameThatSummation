@@ -17,14 +17,23 @@ const GameQuestion = ({ displayName, chartData, questionTime, endQuestion }) => 
 
     const maxTimer = questionTime;
     const [timer, setTimer] = useState(questionTime);
-    const [chartDataSlice, setChartDataSlice] = useState(chartData);
+    let cd = {...chartData};
+    cd.data = cd.data.slice(0,2);
+    const [chartDataSlice, setChartDataSlice] = useState(cd);
     useEffect(() => {
         const interval = setInterval(() => {
             if (timer > 0) { setTimer(timer => timer-1); }
-            if (timer <= 0) { setTimer(0); endQuestion(); }
+            if (timer <= 0) { endQuestion(Math.max(0, timer)); }
 
             let cd = {...chartData};
-            cd.data = cd.data.slice(0,parseFloat(maxTimer-timer)/parseFloat(maxTimer) * chartData.data.length);
+            let x = parseFloat(maxTimer-timer)/parseFloat(maxTimer);
+            let l = chartData.data.length;
+            let sliceI = Math.floor(x**2 * (l-2))+2;
+            console.log("before"+sliceI)
+            console.log(cd)
+            cd.data = cd.data.slice(0, Math.min(chartData.data.length-1, sliceI));
+            console.log("after")
+            console.log(cd)
             setChartDataSlice(cd);
         }, 1000);
         return () => clearInterval(interval);

@@ -33,6 +33,8 @@ function App() {
 
     const [displayName, setDisplayName] = useState("John Doe");
 
+    const [answerTime, setanswerTime] = useState(null);
+
     const goToGame = () => {
         setPageState(pageStates.GAME.MAIN_MENU);
     }
@@ -56,8 +58,9 @@ function App() {
     const goToQuestion = () => {
         setPageState(pageStates.GAME.QUESTION);
     }
-    const goToLeaderboard = () => {
+    const goToLeaderboard = (t) => {
         setPageState(pageStates.GAME.LEADERBOARD);
+        setanswerTime(t);
     }
 
     const [players, setPlayers] = useState([]);
@@ -67,7 +70,10 @@ function App() {
             setPlayers(data.docs.map(doc => doc.data()));
         }
         fetchData();
-    });
+        console.log("fetched players from firebase")
+    }, []);
+
+    console.log(answerTime)
 
     return (
         <>
@@ -82,7 +88,7 @@ function App() {
         <br />
         <Button onClick={() => goToWaitingRoom(displayName)}>WAITING ROOM</Button>
         <Button onClick={goToQuestion}>QUESTION</Button>
-        <Button onClick={goToLeaderboard}>LEADERBOARD</Button>
+        <Button onClick={() => goToLeaderboard(1)}>LEADERBOARD</Button>
         </> : <></>}
 
         {pageState === pageStates.GAME.WAITING_ROOM ? <>
@@ -91,11 +97,11 @@ function App() {
         </> : <></>}
 
         {pageState === pageStates.GAME.QUESTION ? <>
-        <GameQuestion displayName={displayName} chartData={sample_data} questionTime={60} endQuestion={goToLeaderboard} />
+        <GameQuestion displayName={displayName} chartData={sample_data} questionTime={15} endQuestion={goToLeaderboard} />
         </> : <></>}
 
         {pageState === pageStates.GAME.LEADERBOARD ? <>
-        <GameLeaderboard displayName={displayName} playersList={players} />
+        <GameLeaderboard displayName={displayName} playersList={players} answerTime={answerTime} />
         </> : <></>}
 
         {pageState === pageStates.GAME.REVIEW ? <>
