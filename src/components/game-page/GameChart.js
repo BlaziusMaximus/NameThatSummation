@@ -20,7 +20,7 @@ const GameChart = ({ data }) => {
                 tickRotation: 0,
                 legend: 'x-axis',
                 legendOffset: 36,
-                legendPosition: 'middle'
+                legendPosition: 'center'
             }}
             axisLeft={{
                 orient: 'left',
@@ -29,7 +29,7 @@ const GameChart = ({ data }) => {
                 tickRotation: 0,
                 legend: 'y-axis',
                 legendOffset: -40,
-                legendPosition: 'middle'
+                legendPosition: 'center'
             }}
             pointSize={10}
             pointColor={{ theme: 'background' }}
@@ -68,7 +68,7 @@ const GameChart = ({ data }) => {
 };
 
 GameChart.propTypes = {
-    data: PropTypes.array.isRequired,
+    data: PropTypes.object.isRequired,
 }
 
 export default GameChart;

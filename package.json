@@ -10,6 +10,8 @@
     "bootstrap": "^3.4.1",
     "evaluatex": "^2.2.0",
     "firebase": "^8.2.10",
+    "latex.js": "^0.12.4",
+    "mathjax-react": "^1.0.6",
     "nivo": "^0.31.0",
     "react": "^17.0.1",
     "react-bootstrap": "^1.5.1",

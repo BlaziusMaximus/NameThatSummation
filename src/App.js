@@ -11,11 +11,31 @@ import GameMainMenu from './components/game-page/GameMainMenu';
 import GameQuestion from './components/game-page/GameQuestion';
 import GameWaitingRoom from './components/game-page/GameWaitingRoom';
 import GameLeaderboard from './components/game-page/GameLeaderboard';
+import GameReview from './components/game-page/GameReview';
 
-import sample_data from './components/game-page/sample_data';
+import evaluatex from "evaluatex";
+// import sample_data from './components/game-page/sample_data';
 
 import './App.css';
 
+const SAMPLE_CSV = [
+    {
+        "xStart": 0,
+        "xEnd": 10,
+        "xInc": 1,
+        "renderChoices": [ "x", "x^2", "log_{2} x", "\\sqrt{x}" ],
+        "evalChoices": [ "x", "x^2", "logn(x,2)", "sqrt(x)" ],
+        "answerIndex": 1,
+    },
+    {
+        "xStart": 0,
+        "xEnd": 10,
+        "xInc": 1,
+        "renderChoices": [ "x", "x^2", "log_{2} x", "\\sqrt{x}" ],
+        "evalChoices": [ "x", "x^2", "logn(x,2)", "sqrt(x)" ],
+        "answerIndex": 3,
+    },
+]
 
 function App() {
 
@@ -33,7 +53,9 @@ function App() {
 
     const [displayName, setDisplayName] = useState("John Doe");
 
-    const [answerTime, setanswerTime] = useState(null);
+    const [answerTime, setAnswerTime] = useState(null);
+
+    const [questionIndex, setQuestionIndex] = useState(0);
 
     const goToGame = () => {
         setPageState(pageStates.GAME.MAIN_MENU);
@@ -60,7 +82,15 @@ function App() {
     }
     const goToLeaderboard = (t) => {
         setPageState(pageStates.GAME.LEADERBOARD);
-        setanswerTime(t);
+        setAnswerTime(t);
+    }
+    const goToReview = (t) => {
+        setPageState(pageStates.GAME.REVIEW);
+        setAnswerTime(t);
+    }
+
+    const handleAnswerSubmit = (a) => {
+        console.log("answer: ", a);
     }
 
     const [players, setPlayers] = useState([]);
@@ -72,6 +102,31 @@ function App() {
         fetchData();
         console.log("fetched players from firebase")
     }, []);
+
+    // construct chart data
+    const sample_data = SAMPLE_CSV.map(({xEnd, xStart, xInc, evalChoices, answerIndex}) => (
+        {
+            "id": "summation function 1",
+            "color": "hsl(24, 70%, 50%)",
+            "data": [...Array(Math.floor((xEnd-xStart)/parseFloat(xInc))+1).keys()].map(e => (
+                { "x":String(e), "y":evaluatex(evalChoices[answerIndex])({x:e}) }
+            )),
+            "answerChoices": ["x", "x^2", "logn(x,2)", "sqrt(x)"],
+            "latexExp": ["x", "x^2", "log_{2} x", "\\sqrt{x}"],
+            "answer": 1,
+        }
+    ));
+    console.log(sample_data)
+    // [
+    //     {
+    //         "id": "summation function 1",
+    //         "color": "hsl(24, 70%, 50%)",
+    //         "data": data1,
+    //         "answerChoices": ["x", "x^2", "logn(x,2)", "sqrt(x)"],
+    //         "latexExp": ["x", "x^2", "log_{2} x", "\\sqrt{x}"],
+    //         "answer": 1
+    //     },
+    // ];
 
     console.log(answerTime)
 
@@ -89,6 +144,7 @@ function App() {
         <Button onClick={() => goToWaitingRoom(displayName)}>WAITING ROOM</Button>
         <Button onClick={goToQuestion}>QUESTION</Button>
         <Button onClick={() => goToLeaderboard(1)}>LEADERBOARD</Button>
+        <Button onClick={() => goToReview(1)}>REVIEW</Button>
         </> : <></>}
 
         {pageState === pageStates.GAME.WAITING_ROOM ? <>
@@ -97,15 +153,15 @@ function App() {
         </> : <></>}
 
         {pageState === pageStates.GAME.QUESTION ? <>
-        <GameQuestion displayName={displayName} chartData={sample_data} questionTime={15} endQuestion={goToLeaderboard} />
+        <GameQuestion displayName={displayName} chartData={sample_data[questionIndex]} questionTime={15} endQuestion={goToLeaderboard} selectAnswer={handleAnswerSubmit} />
         </> : <></>}
 
         {pageState === pageStates.GAME.LEADERBOARD ? <>
-        <GameLeaderboard displayName={displayName} playersList={players} answerTime={answerTime} />
+        <GameLeaderboard displayName={displayName} chartData={sample_data[questionIndex]} playersList={players} answerTime={answerTime} />
         </> : <></>}
 
         {pageState === pageStates.GAME.REVIEW ? <>
-        <GameLeaderboard displayName={displayName} />
+        <GameReview displayName={displayName} chartsData={sample_data} playersList={players} answerTime={answerTime} />
         </> : <></>}
         </>
     );
