@@ -10,6 +10,7 @@
     "bootstrap": "^3.4.1",
     "evaluatex": "^2.2.0",
     "firebase": "^8.2.10",
+    "firebase-admin": "^9.5.0",
     "latex.js": "^0.12.4",
     "mathjax-react": "^1.0.6",
     "nivo": "^0.31.0",

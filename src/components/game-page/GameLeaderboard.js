@@ -11,7 +11,7 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 
 
-const GameLeaderboard = ({ displayName, chartData, playersList, answerTime }) => {
+const GameLeaderboard = ({ displayName, chartData, playersList, answerTime, nextQuestion }) => {
 
     let rankedPlayers = playersList.sort((a,b) => (a.name > b.name) ? 1 : -1);
     console.log(rankedPlayers)
@@ -47,10 +47,12 @@ const GameLeaderboard = ({ displayName, chartData, playersList, answerTime }) =>
                         {topPlayers.map(player =>  <li key={player.name+""+player.city}>{player.name}</li> )}
                     </ul>
                     <p key="ellipsis1">...</p>
-                        {localPlayer == null ? <></> : (<>
-                            <ul><li key="localPlayer">{localPlayer.name}</li></ul>
-                            <p key="ellipsis2">...</p>
-                        </>)}
+                    {localPlayer == null ? <></> : (<>
+                        <ul><li key="localPlayer">{localPlayer.name}</li></ul>
+                        <p key="ellipsis2">...</p>
+                    </>)}
+                    <br />
+                    <Button variant="secondary" onClick={nextQuestion}>NEXT QUESTION</Button>
                 </Col>
             </Row>
         </Container>
@@ -63,6 +65,7 @@ GameLeaderboard.propTypes = {
     chartData: PropTypes.object.isRequired,
     playersList: PropTypes.array.isRequired,
     answerTime: PropTypes.number.isRequired,
+    nextQuestion: PropTypes.func.isRequired,
 }
 
 export default GameLeaderboard;

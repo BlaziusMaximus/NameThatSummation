@@ -1,7 +1,5 @@
 import { db } from "./firebase";
 
-import Button from 'react-bootstrap/Button';
-
 import React from 'react';
 import {useState} from 'react';
 
@@ -12,6 +10,7 @@ import GameQuestion from './components/game-page/GameQuestion';
 import GameWaitingRoom from './components/game-page/GameWaitingRoom';
 import GameLeaderboard from './components/game-page/GameLeaderboard';
 import GameReview from './components/game-page/GameReview';
+import DevPanel from './components/game-page/DevPanel';
 
 import evaluatex from "evaluatex";
 // import sample_data from './components/game-page/sample_data';
@@ -35,7 +34,8 @@ const SAMPLE_CSV = [
         "evalChoices": [ "x", "x^2", "logn(x,2)", "sqrt(x)" ],
         "answerIndex": 3,
     },
-]
+];
+const numQuestions = 2;
 
 function App() {
 
@@ -50,12 +50,17 @@ function App() {
         },
     };
     const [pageState, setPageState] = useState(pageStates.TEAM_PAGE);
-
-    const [displayName, setDisplayName] = useState("John Doe");
-
-    const [answerTime, setAnswerTime] = useState(null);
-
     const [questionIndex, setQuestionIndex] = useState(0);
+
+    const [localPlayerObj, setLocalPlayerObj] = useState({
+        "name": "John Doe",
+        "score": 0,
+        "section": 1337,
+        "answers": [],
+        "wrongAnswers": [],
+        "times": [],
+    });
+    const [answerTime, setAnswerTime] = useState(null);
 
     const goToGame = () => {
         setPageState(pageStates.GAME.MAIN_MENU);
@@ -65,17 +70,16 @@ function App() {
     }
     const goToWaitingRoom = (name) => {
         setPageState(pageStates.GAME.WAITING_ROOM);
-        setDisplayName(name);
-        db.collection("playersDB").add({
-            name: name,
-            city: 1337
-        })
-        .then((docRef) => {
-            console.log("Document written with ID: ", docRef.id);
-        })
-        .catch((error) => {
-            console.error("Error adding document: ", error);
-        });
+        // db.collection("playersDB").add({
+        //     name: name,
+        //     city: 1337
+        // })
+        // .then((docRef) => {
+        //     console.log("Document written with ID: ", docRef.id);
+        // })
+        // .catch((error) => {
+        //     console.error("Error adding document: ", error);
+        // });
     }
     const goToQuestion = () => {
         setPageState(pageStates.GAME.QUESTION);
@@ -84,13 +88,40 @@ function App() {
         setPageState(pageStates.GAME.LEADERBOARD);
         setAnswerTime(t);
     }
-    const goToReview = (t) => {
+    const goToReview = () => {
         setPageState(pageStates.GAME.REVIEW);
-        setAnswerTime(t);
     }
 
-    const handleAnswerSubmit = (a) => {
-        console.log("answer: ", a);
+    const goToNextQuestion = () => {
+        if (questionIndex === numQuestions-1) {
+            goToReview();
+        } else {
+            setQuestionIndex(questionIndex+1);
+            goToQuestion();
+        }
+    }
+
+    const handleAnswerSubmit = async (a,t) => {
+        console.log(localPlayerObj.name, "answer: ", a, "time: ", t);
+        setLocalPlayerObj({
+            ...localPlayerObj,
+            answers: [...(localPlayerObj.answers),a],
+            wrongAnswers: a===sample_data[questionIndex].answer ? [...(localPlayerObj.wrongAnswers)] : [...(localPlayerObj.wrongAnswers),a],
+            times: [...(localPlayerObj.times),t],
+        });
+
+        const docRef = db.collection('playersDB').doc(localPlayerObj.name);
+        docRef.get().then(async (doc) => {
+            if (doc.exists) {
+                // name, section, times, answers, score
+                const playerObject = doc.data();
+                await docRef.set({
+                    ...playerObject,
+                    answers: [...(playerObject.answers),a],
+                    times: [...(playerObject.times),t]
+                });
+            }
+        });
     }
 
     const [players, setPlayers] = useState([]);
@@ -104,19 +135,17 @@ function App() {
     }, []);
 
     // construct chart data
-    const sample_data = SAMPLE_CSV.map(({xEnd, xStart, xInc, evalChoices, answerIndex}) => (
-        {
-            "id": "summation function 1",
-            "color": "hsl(24, 70%, 50%)",
-            "data": [...Array(Math.floor((xEnd-xStart)/parseFloat(xInc))+1).keys()].map(e => (
-                { "x":String(e), "y":evaluatex(evalChoices[answerIndex])({x:e}) }
-            )),
-            "answerChoices": ["x", "x^2", "logn(x,2)", "sqrt(x)"],
-            "latexExp": ["x", "x^2", "log_{2} x", "\\sqrt{x}"],
-            "answer": 1,
-        }
-    ));
-    console.log(sample_data)
+    const sample_data = SAMPLE_CSV.map(({xEnd, xStart, xInc, evalChoices, answerIndex}, index) => ({
+        "id": `summation function ${index+1}`,
+        "color": "hsl(24, 70%, 50%)",
+        "data": [...Array(Math.floor((xEnd-xStart)/parseFloat(xInc))+1).keys()].map(e => (
+            { "x":String(e), "y":evaluatex(evalChoices[answerIndex])({x:e}) }
+        )),
+        "answerChoices": ["x", "x^2", "logn(x,2)", "sqrt(x)"],
+        "latexExp": ["x", "x^2", "log_{2} x", "\\sqrt{x}"],
+        "answer": answerIndex,
+    }));
+    // console.log(sample_data)
     // [
     //     {
     //         "id": "summation function 1",
@@ -128,8 +157,6 @@ function App() {
     //     },
     // ];
 
-    console.log(answerTime)
-
     return (
         <>
         {pageState === pageStates.TEAM_PAGE ? <>
@@ -139,30 +166,57 @@ function App() {
         </> : <></>}
 
         {pageState === pageStates.GAME.MAIN_MENU ? <>
-        <GameMainMenu onGoToTeamClick={goToTeam} onSubmitName={goToWaitingRoom} />
-        <br />
-        <Button onClick={() => goToWaitingRoom(displayName)}>WAITING ROOM</Button>
-        <Button onClick={goToQuestion}>QUESTION</Button>
-        <Button onClick={() => goToLeaderboard(1)}>LEADERBOARD</Button>
-        <Button onClick={() => goToReview(1)}>REVIEW</Button>
+        <GameMainMenu
+            onGoToTeamClick={goToTeam}
+            onSubmitName={(name) => {setLocalPlayerObj({...localPlayerObj, "name":name}); goToWaitingRoom(name);}}
+        />
         </> : <></>}
 
         {pageState === pageStates.GAME.WAITING_ROOM ? <>
-        <GameWaitingRoom displayName={displayName} playersList={players} />
-        <Button onClick={goToQuestion}>QUESTION</Button>
+        <GameWaitingRoom
+            displayName={localPlayerObj.name}
+            playersList={players}
+        />
         </> : <></>}
 
         {pageState === pageStates.GAME.QUESTION ? <>
-        <GameQuestion displayName={displayName} chartData={sample_data[questionIndex]} questionTime={15} endQuestion={goToLeaderboard} selectAnswer={handleAnswerSubmit} />
+        <GameQuestion
+            displayName={localPlayerObj.name}
+            chartData={sample_data[questionIndex]}
+            questionTime={15}
+            endQuestion={goToLeaderboard}
+            selectAnswer={handleAnswerSubmit}
+        />
         </> : <></>}
 
         {pageState === pageStates.GAME.LEADERBOARD ? <>
-        <GameLeaderboard displayName={displayName} chartData={sample_data[questionIndex]} playersList={players} answerTime={answerTime} />
+        <GameLeaderboard
+            displayName={localPlayerObj.name}
+            chartData={sample_data[questionIndex]}
+            playersList={players}
+            answerTime={answerTime}
+            nextQuestion={goToNextQuestion}
+        />
         </> : <></>}
 
         {pageState === pageStates.GAME.REVIEW ? <>
-        <GameReview displayName={displayName} chartsData={sample_data} playersList={players} answerTime={answerTime} />
+        <GameReview
+            localPlayer={localPlayerObj}
+            chartsData={sample_data}
+            playersList={players}
+            answerTime={answerTime}
+        />
         </> : <></>}
+        
+        <br />
+        <DevPanel
+            goToLeaderboard={goToLeaderboard}
+            goToReview={goToReview}
+            goToQuestion={goToQuestion}
+            goToWaitingRoom={goToWaitingRoom}
+            displayName={localPlayerObj.name}
+            setDisplayName={(name) => setLocalPlayerObj({...localPlayerObj, "name":name})}
+        />
         </>
     );
 }
