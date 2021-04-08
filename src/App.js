@@ -72,7 +72,7 @@ function App() {
     }, []);
 
     return (
-    <Router>
+    <Router basename="/NameThatSummation">
         <Switch>
             <Route exact path="/">
                 <nav>
