@@ -1,3 +1,6 @@
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Container';
@@ -9,11 +12,10 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Modal from 'react-bootstrap/Modal';
 
-import PropTypes from 'prop-types';
-import { useState } from 'react';
+import LinkContainer from 'react-router-bootstrap/lib/LinkContainer';
 
 
-const GameMainMenu = ({ onGoToTeamClick, onSubmitName }) => {
+const GameMainMenu = ({ onSubmitName, canSubmitName }) => {
 
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const handleShowSettings = () => setShowSettingsModal(true);
@@ -24,15 +26,17 @@ const GameMainMenu = ({ onGoToTeamClick, onSubmitName }) => {
         onSubmitName(e.target[0].value);
     }
 
-    return (
-        <>
+    return (<>
+
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto" />
             <Nav>
                 <Nav.Item className="mr-2">
-                <Button onClick={onGoToTeamClick}>Go to <strong>Team Page</strong></Button>
+                <LinkContainer to="/team-page">
+                    <Button>Go to <strong>Team Page</strong></Button>
+                </LinkContainer>
                 </Nav.Item>
                 <Nav.Link href="https://github.com/BlaziusMaximus/NameThatSummation">
                 Go to <strong>GitHub</strong>
@@ -77,7 +81,7 @@ const GameMainMenu = ({ onGoToTeamClick, onSubmitName }) => {
                                 aria-describedby="display-name-form"
                                 />
                             <InputGroup.Append>
-                                <Button variant="outline-primary" type="submit">Submit</Button>
+                                <Button variant="outline-primary" type="submit" disabled={!canSubmitName}>Submit</Button>
                             </InputGroup.Append>
                         </InputGroup>
                     </Form>
@@ -85,13 +89,12 @@ const GameMainMenu = ({ onGoToTeamClick, onSubmitName }) => {
             </Row>
         </Container>
         
-        </>
-    );
+    </>);
 }
 
 GameMainMenu.propTypes = {
-    onGoToTeamClick: PropTypes.func.isRequired,
     onSubmitName: PropTypes.func.isRequired,
+    canSubmitName: PropTypes.bool.isRequired,
 };
 
 export default GameMainMenu;

@@ -1,14 +1,14 @@
+import {useEffect, useState} from 'react';
+import PropTypes from 'prop-types';
+
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Card from 'react-bootstrap/Card';
 
-import GameChart from './GameChart';
-
-import {useEffect, useState} from 'react';
-
 import { MathComponent } from 'mathjax-react';
 
-import PropTypes from 'prop-types';
+import GameChart from './GameChart';
+
 
 const GameQuestion = ({ displayName, chartData, questionTime, endQuestion, selectAnswer }) => {
 
@@ -21,17 +21,19 @@ const GameQuestion = ({ displayName, chartData, questionTime, endQuestion, selec
         }
     }
 
-    const [answerChoiceIndex, setanswerChoiceIndex] = useState("");
+    const [answerChoiceIndex, setAnswerChoiceIndex] = useState(null);
     const [answersClicked, setAnswersClicked] = useState(new Array(chartData.latexExp.length).fill(0));
     const [answerTime, setAnswerTime] = useState(null);
     const handleAnswerSelect = (e) => {
         e.preventDefault();
         let id = parseInt(e.currentTarget.id);
-        setanswerChoiceIndex(id);
-        setAnswerTime(questionTime-timer);
         let newAnsClicked = answersClicked; newAnsClicked[parseInt(id)] = 1; setAnswersClicked(newAnsClicked);
-
-        selectAnswer(id, questionTime-timer);
+        
+        if (answerChoiceIndex===null) {
+            selectAnswer(id, questionTime-timer);
+        }
+        setAnswerChoiceIndex(id);
+        setAnswerTime(questionTime-timer);
 
         setShowFeedbackModal(true);
     }
@@ -55,11 +57,6 @@ const GameQuestion = ({ displayName, chartData, questionTime, endQuestion, selec
         }, 1000);
         return () => clearInterval(interval);
     }, [timer, maxTimer, chartData, endQuestion]);
-
-    // console.log(chartData.answerChoiceIndexs[0], "=1: ", evaluatex(chartData.answerChoiceIndexs[0])({x:10}));
-    // console.log(chartData.answerChoiceIndexs[1], "=1: ", evaluatex(chartData.answerChoiceIndexs[1])({x:10}));
-    // console.log(chartData.answerChoiceIndexs[2], "=1: ", evaluatex(chartData.answerChoiceIndexs[2])({x:10}));
-    // console.log(chartData.answerChoiceIndexs[3], "=1: ", evaluatex(chartData.answerChoiceIndexs[3])({x:10}));
 
     return (
         <>

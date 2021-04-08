@@ -1,4 +1,3 @@
-
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import ResponsiveEmbed from 'react-bootstrap/ResponsiveEmbed';
@@ -20,7 +19,7 @@ const TeamPageBody = () => {
             <Row>
                 <div style={{ width: '8.5in', height: 'auto' }}>
                     <ResponsiveEmbed aspectRatio="1by1">
-                        <iframe src="https://docs.google.com/document/d/e/2PACX-1vR3nIMv9RltRskz5HY8NZmztMdaF0d1Mfb3Hda5n9-c8VyV_3afAFM-4RU_UVSMI2WajPdJPZLxVgmS/pub?embedded=true" />
+                        <iframe title="Design Doc" src="https://docs.google.com/document/d/e/2PACX-1vR3nIMv9RltRskz5HY8NZmztMdaF0d1Mfb3Hda5n9-c8VyV_3afAFM-4RU_UVSMI2WajPdJPZLxVgmS/pub?embedded=true" />
                     </ResponsiveEmbed>
                 </div>
             </Row>

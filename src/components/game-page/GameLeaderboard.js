@@ -1,6 +1,7 @@
 import {useState} from 'react';
-
 import PropTypes from 'prop-types';
+
+import { MathComponent } from 'mathjax-react';
 
 import GameChart from './GameChart';
 
@@ -17,8 +18,6 @@ const GameLeaderboard = ({ displayName, chartData, playersList, answerTime, next
     console.log(rankedPlayers)
     let topPlayers = rankedPlayers.length >= 5 ? rankedPlayers.slice(0,5) : rankedPlayers;
     let localPlayer = null; // rankedPlayers.find(p => p.id == thisPlayer.id) == undefined ? null : thisPlayer;
-    
-    let answerChoice = "choice2";
 
     return (
         <>
@@ -34,10 +33,11 @@ const GameLeaderboard = ({ displayName, chartData, playersList, answerTime, next
                         <GameChart data={chartData} />
                     </Card.Body>
                     <Card.Footer>
-                        <Button disabled id="choice1" variant={answerChoice==="choice1"?"success":"primary"} style={{margin: "0 2%"}}>y = x</Button>
-                        <Button disabled id="choice2" variant={answerChoice==="choice2"?"success":"primary"} style={{margin: "0 2%"}}>y = x^2</Button>
-                        <Button disabled id="choice3" variant={answerChoice==="choice3"?"success":"primary"} style={{margin: "0 2%"}}>y = log_2(x)</Button>
-                        <Button disabled id="choice4" variant={answerChoice==="choice4"?"success":"primary"} style={{margin: "0 2%"}}>y = sqrt(x)</Button>
+                        {chartData.latexExp.map((e,index) => (
+                        <Button id={index} key={index} disabled style={{margin: "0 2%"}}>
+                                <MathComponent tex={`y = ${e}`} />
+                        </Button>
+                        ))}
                     </Card.Footer>
                 </Card>
                 </Col>

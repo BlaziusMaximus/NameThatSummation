@@ -2,9 +2,10 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Button from 'react-bootstrap/Button';
 
-import PropTypes from 'prop-types';
+import LinkContainer from 'react-router-bootstrap/lib/LinkContainer';
 
-const TeamPageHeader = ({ onGoToGameClick }) => {
+
+const TeamPageHeader = () => {
 
     return (
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -14,7 +15,9 @@ const TeamPageHeader = ({ onGoToGameClick }) => {
             <Nav className="mr-auto" />
             <Nav>
                 <Nav.Item className="mr-2">
-                <Button onClick={onGoToGameClick}>Go to <strong>Game</strong></Button>
+                <LinkContainer to="/game-page">
+                    <Button>Go to <strong>Game</strong></Button>
+                </LinkContainer>
                 </Nav.Item>
                 <Nav.Link href="https://github.com/BlaziusMaximus/NameThatSummation">
                 Go to <strong>GitHub</strong>
@@ -23,10 +26,6 @@ const TeamPageHeader = ({ onGoToGameClick }) => {
             </Navbar.Collapse>
         </Navbar>
     );
-}
-
-TeamPageHeader.propTypes = {
-    onGoToGameClick: PropTypes.func.isRequired,
 }
 
 export default TeamPageHeader;
