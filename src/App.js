@@ -30,6 +30,7 @@ function App() {
     const [players, setPlayers] = useState([]);
     React.useEffect(() => {
         db.collection("playersDB").onSnapshot((snapshot) => {
+            console.log(snapshot.docs);
             if (snapshot.docs.length > 0) {
                 setPlayers(snapshot.docs.map(doc => doc.data()));
             } else {
@@ -42,6 +43,7 @@ function App() {
     const [questions, setQuestions] = useState([]);
     React.useEffect(() => {
         db.collection("questions").onSnapshot((snapshot) => {
+            console.log(snapshot.docs);
             setQuestions(snapshot.docs.map((doc) => {
                 let { xEnd, xStart, xInc, evalChoices, renderChoices, answerIndex, maxScore } = doc.data();
                 return {
@@ -70,12 +72,12 @@ function App() {
     });
     React.useEffect(() => {
         db.collection("adminVars").doc("GameState").onSnapshot((doc) => {
-            console.log(doc.data())
+            console.log(doc.data());
             setAdminGameState(doc.data());
 
             db.collection("playersDB").get().then(playersDB => {
                 setPlayers(playersDB.docs.map(doc => doc.data()))
-            })
+            });
         });
         console.log("fetched admins variables from firebase")
     }, []);

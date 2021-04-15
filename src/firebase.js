@@ -12,13 +12,13 @@ import 'firebase/firestore';
 // };
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBxdroTYNIaxZcwj75RaYMU601PjTzoRnM",
-    authDomain: "comp585-e8338.firebaseapp.com",
-    projectId: "comp585-e8338",
-    storageBucket: "comp585-e8338.appspot.com",
-    messagingSenderId: "1011171509531",
-    appId: "1:1011171509531:web:fa24c5896cbcb16e6cbfbe",
-    measurementId: "G-V22WJ91GTT"
+    apiKey: "AIzaSyB-xHDeSe4hqhBhG5QEOy6NMdF61QA6orI",
+    authDomain: "comp585-version1.firebaseapp.com",
+    projectId: "comp585-version1",
+    storageBucket: "comp585-version1.appspot.com",
+    messagingSenderId: "86593862085",
+    appId: "1:86593862085:web:c1f4f3f0a331797292b3ac",
+    measurementId: "G-1PWT66W06C"
 };
 
 

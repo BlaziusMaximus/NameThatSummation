@@ -18,6 +18,7 @@ const AdminPage = ({ gameStates, gameState, playersList, adminGameState, setAdmi
         };
         setAdminGameState(newGameState);
         db.collection("adminVars").doc("GameState").set(newGameState);
+        console.log("gameState set");
     }
     const clearGame = () => {
         let newGameState = {
@@ -26,9 +27,11 @@ const AdminPage = ({ gameStates, gameState, playersList, adminGameState, setAdmi
         };
         setAdminGameState(newGameState);
         db.collection("adminVars").doc("GameState").set(newGameState);
+        console.log("gameState set");
 
         playersList.forEach(player => {
             db.collection('playersDB').doc(player.name).delete();
+            console.log("player deleted");
         });
     }
     const startGame = () => {
@@ -38,6 +41,7 @@ const AdminPage = ({ gameStates, gameState, playersList, adminGameState, setAdmi
         };
         setAdminGameState(newGameState);
         db.collection("adminVars").doc("GameState").set(newGameState);
+        console.log("gameState set");
     }
     const prevQuestion = () => {
         let qIndex = adminGameState.questionIndex - 1;
@@ -48,6 +52,7 @@ const AdminPage = ({ gameStates, gameState, playersList, adminGameState, setAdmi
             };
             setAdminGameState(newGameState);
             db.collection("adminVars").doc("GameState").set(newGameState);
+            console.log("gameState set");
         }
     }
     const nextQuestion = () => {
@@ -59,6 +64,7 @@ const AdminPage = ({ gameStates, gameState, playersList, adminGameState, setAdmi
             };
             setAdminGameState(newGameState);
             db.collection("adminVars").doc("GameState").set(newGameState);
+            console.log("gameState set");
         } else {
             let newGameState = {
                 state: gameStates.REVIEW,
@@ -66,6 +72,7 @@ const AdminPage = ({ gameStates, gameState, playersList, adminGameState, setAdmi
             };
             setAdminGameState(newGameState);
             db.collection("adminVars").doc("GameState").set(newGameState);
+            console.log("gameState set");
         }
     }
 
