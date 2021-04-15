@@ -19,6 +19,18 @@ const AdminPage = ({ gameStates, gameState, playersList, adminGameState, setAdmi
         setAdminGameState(newGameState);
         db.collection("adminVars").doc("GameState").set(newGameState);
     }
+    const clearGame = () => {
+        let newGameState = {
+            state: gameStates.OFFLINE,
+            questionIndex: null,
+        };
+        setAdminGameState(newGameState);
+        db.collection("adminVars").doc("GameState").set(newGameState);
+
+        playersList.forEach(player => {
+            db.collection('playersDB').doc(player.name).delete();
+        });
+    }
     const startGame = () => {
         let newGameState = {
             state: gameStates.PLAYING,
@@ -26,6 +38,17 @@ const AdminPage = ({ gameStates, gameState, playersList, adminGameState, setAdmi
         };
         setAdminGameState(newGameState);
         db.collection("adminVars").doc("GameState").set(newGameState);
+    }
+    const prevQuestion = () => {
+        let qIndex = adminGameState.questionIndex - 1;
+        if (qIndex >= 0) {
+            let newGameState = {
+                state: gameStates.PLAYING,
+                questionIndex: qIndex,
+            };
+            setAdminGameState(newGameState);
+            db.collection("adminVars").doc("GameState").set(newGameState);
+        }
     }
     const nextQuestion = () => {
         let qIndex = adminGameState.questionIndex + 1;
@@ -46,11 +69,17 @@ const AdminPage = ({ gameStates, gameState, playersList, adminGameState, setAdmi
         }
     }
 
+    const kickPlayer = (player) => {
+        db.collection('playersDB').doc(player.name).delete();
+    }
+
     return (<>
 
         {gameState === gameStates.OFFLINE ? <>
             <AdminOffline
                 initializeGame={initializeGame}
+                clearGame={clearGame}
+                playersList={playersList}
             />
         </> : <></>}
 
@@ -58,11 +87,15 @@ const AdminPage = ({ gameStates, gameState, playersList, adminGameState, setAdmi
             <AdminWaiting
                 playersList={playersList}
                 startGame={startGame}
+                quitGame={clearGame}
+                kickPlayer={kickPlayer}
             />
         </> : <></>}
 
         {gameState === gameStates.PLAYING ? <>
             <AdminPlaying
+                quitGame={clearGame}
+                prevQuestion={prevQuestion}
                 nextQuestion={nextQuestion}
                 questions={questions}
                 adminGameState={adminGameState}
@@ -74,6 +107,7 @@ const AdminPage = ({ gameStates, gameState, playersList, adminGameState, setAdmi
             <AdminReview
                 chartsData={questions}
                 playersList={playersList}
+                endGame={clearGame}
             />
         </> : <></>}
         

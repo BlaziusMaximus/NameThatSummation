@@ -10,18 +10,42 @@ import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import Table from 'react-bootstrap/Table';
 import ListGroup from 'react-bootstrap/ListGroup';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 
 import GameChart from '../GameChart';
 
 import { MathComponent } from 'mathjax-react';
 
 
-const AdminPlaying = ({ nextQuestion, questions, adminGameState, playersList }) => {
+const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, adminGameState, playersList }) => {
 
     const [tab, setTab] = useState("players");
 
     return (<>
-        <Button onClick={nextQuestion} id="startgame" variant="danger" size="lg" block>Next Question</Button>
+
+        <Button onClick={quitGame} id="startgame" variant="danger" size="lg" block>Quit Game</Button>
+        <ButtonGroup className="d-flex">
+            <Button
+                className="btn-block mr-1 mt-1 btn-lg"
+                onClick={prevQuestion}
+                id="prev"
+                variant="secondary"
+                size="lg"
+                block
+                disabled={adminGameState.questionIndex === 0}>
+                    Previous Question
+            </Button>
+            <Button
+                className="btn-block mr-1 mt-1 btn-lg"
+                onClick={nextQuestion}
+                id="next"
+                variant="primary"
+                size="lg"
+                block>
+                    Next Question
+            </Button>
+        </ButtonGroup>
+
         <Container fluid>
         <Row>
             <Col sm={5}>
@@ -37,7 +61,7 @@ const AdminPlaying = ({ nextQuestion, questions, adminGameState, playersList }) 
                         disabled
                         style={{margin: "0 2%"}}
                         variant={questions[adminGameState.questionIndex].answerIndex===index?"success":"primary"}>
-                            <MathComponent tex={`y = ${e}`} />
+                            <MathComponent tex={`y = ${e}`} display={false} />
                     </Button>
                 ))}
                 </Card.Footer>
@@ -80,9 +104,9 @@ const AdminPlaying = ({ nextQuestion, questions, adminGameState, playersList }) 
                             variant={index===adminGameState.questionIndex?"primary":(index<adminGameState.questionIndex?"secondary":"")}>
                                 <Container>
                                 <Row>
-                                    <Col xs={3} style={{margin: "auto"}}>
+                                    {/* <Col xs={3} style={{margin: "auto"}}>
                                         <Button variant="danger" size="sm">✖</Button>
-                                    </Col>
+                                    </Col> */}
                                     <Col>
                                         {q.id}
                                     </Col>
@@ -108,7 +132,7 @@ const AdminPlaying = ({ nextQuestion, questions, adminGameState, playersList }) 
                                     disabled
                                     style={{margin: "0 2%"}}
                                     variant={q.answerIndex===expindex?"success":"primary"}>
-                                        <MathComponent tex={`y = ${e}`} />
+                                        <MathComponent tex={`y = ${e}`} display={false} />
                                 </Button>
                             ))}
                             </Card.Footer>
@@ -128,6 +152,8 @@ const AdminPlaying = ({ nextQuestion, questions, adminGameState, playersList }) 
 }
 
 AdminPlaying.propTypes = {
+    quitGame: PropTypes.func.isRequired,
+    prevQuestion: PropTypes.func.isRequired,
     nextQuestion: PropTypes.func.isRequired,
     questions: PropTypes.array.isRequired,
     adminGameState: PropTypes.object.isRequired,

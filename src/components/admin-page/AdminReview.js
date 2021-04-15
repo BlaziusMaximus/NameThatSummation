@@ -9,19 +9,22 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Tab from 'react-bootstrap/Tab';
 import ListGroup from 'react-bootstrap/ListGroup';
+import Table from 'react-bootstrap/Table';
 
 import { MathComponent } from 'mathjax-react';
 
 
-const AdminReview = ({ chartsData, playersList }) => {
+const AdminReview = ({ chartsData, playersList, endGame }) => {
 
     let rankedPlayers = playersList.sort((a,b) => (a.name > b.name) ? 1 : -1);
     console.log(rankedPlayers)
     let topPlayers = rankedPlayers.length >= 5 ? rankedPlayers.slice(0,5) : rankedPlayers;
     // let localPlayer = null; // rankedPlayers.find(p => p.id == thisPlayer.id) == undefined ? null : thisPlayer;
 
-    return (
-        <>
+    return (<>
+
+        <Button onClick={endGame} id="cleargame" variant="secondary" size="lg" block>End Game</Button>
+
         <Container fluid>
         <Row>
             <Col xs={8}>
@@ -61,21 +64,33 @@ const AdminReview = ({ chartsData, playersList }) => {
             </Col>
             <Col>
                 <h1>LEADERBOARD</h1>
-                <ul>
-                    {topPlayers.map(player =>  <li key={player.name+""+player.city}>{player.name}</li> )}
-                </ul>
+                <Table striped bordered>
+                <thead>
+                    <tr>
+                        <th>Top Players</th>
+                        <th>Scores</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {topPlayers.map(player =>
+                    <tr key={player.name+""+player.score}>
+                        <td>{player.name}</td>
+                        <td>{player.score}</td>
+                    </tr>
+                    )}
+                </tbody>
+                </Table>
             </Col>
         </Row>
         </Container>
-        </>
-    );
+    
+    </>);
 }
 
 AdminReview.propTypes = {
-    localPlayer: PropTypes.object.isRequired,
     chartsData: PropTypes.array.isRequired,
     playersList: PropTypes.array.isRequired,
-    answerTime: PropTypes.number.isRequired,
+    endGame: PropTypes.func.isRequired,
 }
 
 export default AdminReview;

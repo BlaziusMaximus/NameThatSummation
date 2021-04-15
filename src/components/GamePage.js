@@ -10,8 +10,13 @@ import GameLeaderboard from './game-page/GameLeaderboard';
 import GameReview from './game-page/GameReview';
 import DevPanel from './DevPanel';
 
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+
 
 const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRoomIsOpen }) => {
+
+    const questionTime = 15;
 
     const pageStates = {
         MAIN_MENU: "MAIN_MENU",
@@ -22,7 +27,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
     };
     const [pageState, setPageState] = useState(pageStates.MAIN_MENU);
     
-    const [answerTime, setAnswerTime] = useState(0);
+    const [timer, setTimer] = useState(questionTime);
     
     const [questionIndex, setQuestionIndex] = useState(null);
 
@@ -35,65 +40,71 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
         "wrongAnswers": [],
         "times": [],
     });
+
+    const [showKickModal, setShowKickModal] = useState(false);
+    const handleShowKick = () => setShowKickModal(true);
+    const handleCloseKick = () => setShowKickModal(false);
     
     const goToMainMenu = () => {
         setPageState(pageStates.MAIN_MENU);
     }
     const goToWaitingRoom = (name, section) => {
         setPageState(pageStates.WAITING_ROOM);
-        db.collection("playersDB").doc(name).set({
+        const newPlayerObj = {
             ...localPlayerObj,
             id: Math.floor(Math.random()*Date.now()),
             "name": name,
             "section": section,
+            "score": 0,
+        }
+        setLocalPlayerObj({
+            ...newPlayerObj,
+        });
+        db.collection("playersDB").doc(name).set({
+            ...newPlayerObj,
         });
     }
     const goToQuestion = React.useCallback(() => {
         setPageState(pageStates.QUESTION);
         setQuestionIndex(adminQuestionIndex);
+        console.log(adminQuestionIndex)
+        setTimer(questionTime);
     }, [adminQuestionIndex, pageStates.QUESTION]);
-    const goToLeaderboard = (t) => {
+    const goToLeaderboard = React.useCallback(() => {
         setPageState(pageStates.LEADERBOARD);
-        setAnswerTime(t);
-    }
+    }, [pageStates.LEADERBOARD]);
     const goToReview = React.useCallback(() => {
         setPageState(pageStates.REVIEW);
     }, [pageStates.REVIEW]);
 
     React.useEffect(() => {
-        if (adminQuestionIndex != null && (pageState === pageStates.WAITING_ROOM || adminQuestionIndex > questionIndex)) {
+        if (adminQuestionIndex != null && (pageState === pageStates.WAITING_ROOM || adminQuestionIndex !== questionIndex)) {
             goToQuestion();
         }
         if (adminQuestionIndex === null && (pageState === pageStates.QUESTION || pageState === pageStates.LEADERBOARD)) {
-            console.log("REVIEW")
             goToReview();
         }
     }, [adminQuestionIndex, questionIndex, pageState, pageStates.WAITING_ROOM, pageStates.QUESTION, pageStates.LEADERBOARD, goToQuestion, goToReview]);
 
     const handleAnswerSubmit = async (a,t) => {
-        console.log(localPlayerObj.name, "answer:", a, "time:", t, "score:",chartData/t);
-        setLocalPlayerObj({
+        // console.log(localPlayerObj.name, "answer:", a, "time:", t, "score:",chartData.maxScore*t);
+        const score = parseFloat(chartData.maxScore)*parseFloat(t)/parseFloat(questionTime);
+        let was = localPlayerObj.wrongAnswers;
+        let newAnswer = false;
+        if (was[chartData.id] === undefined) { was[chartData.id] = []; newAnswer = true; }
+        if (a !== chartData.answerIndex) { was[chartData.id].push(a); }
+        const newPlayerObj = {
             ...localPlayerObj,
-            answers: [...(localPlayerObj.answers),a],
-            wrongAnswers: a===chartData.answerIndex ? [...(localPlayerObj.wrongAnswers)] : [...(localPlayerObj.wrongAnswers),a],
-            times: [...(localPlayerObj.times),t],
-            score: localPlayerObj.score + Math.floor(chartData.maxScore/t),
+            answers: newAnswer?[...(localPlayerObj.answers),a]:[...(localPlayerObj.answers)],
+            wrongAnswers: was,
+            times: newAnswer?[...(localPlayerObj.times),t]:[...(localPlayerObj.times)],
+            score: localPlayerObj.score + newAnswer?Math.floor(score):0,
+        };
+        setLocalPlayerObj({
+            ...newPlayerObj,
         });
-
-        const docRef = db.collection('playersDB').doc(localPlayerObj.name);
-        docRef.get().then(async (doc) => {
-            if (doc.exists) {
-                // name, section, times, answers, score
-                const playerObject = doc.data();
-                let playerAnswers = playerObject.answers===undefined ? [] : playerObject.answers;
-                let playerTimes = playerObject.times===undefined ? [] : playerObject.times;
-                await docRef.set({
-                    ...playerObject,
-                    answers: [...playerAnswers,a],
-                    times: [...playerTimes,t],
-                    score: playerObject.score + Math.floor(chartData.maxScore/t),
-                });
-            }
+        db.collection('playersDB').doc(localPlayerObj.name).set({
+            ...newPlayerObj,
         });
     }
 
@@ -102,11 +113,42 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
         setTopPlayers(
             players.filter(a => Number.isInteger(a.score))
                    .sort((a,b) => a.score<b.score ? 1 : -1)
-                   .slice(0,5));
-    }, [players]);
+                   .slice(0,5)
+        );
+        
+        if (pageState !== pageStates.MAIN_MENU && players.find(player => player.id === localPlayerObj.id) === undefined) {
+            // console.log("local player not in playersDB", players, localPlayerObj);
+            setPageState(pageStates.MAIN_MENU);
+            handleShowKick();
+        }
+    }, [players, pageStates.MAIN_MENU]);
 
-    return (
-        <>
+    React.useEffect(() => {
+        const interval = setInterval(() => {
+            if (pageState === pageStates.QUESTION) {
+                if (timer > 0) {
+                    setTimer(timer => timer-1);
+                } else {
+                    const newPlayerObj = {
+                        ...localPlayerObj,
+                        answers: [...(localPlayerObj.answers),null],
+                        times: [...(localPlayerObj.times),null],
+                    };
+                    setLocalPlayerObj({
+                        ...newPlayerObj,
+                    });
+                    db.collection('playersDB').doc(localPlayerObj.name).set({
+                        ...newPlayerObj,
+                    });
+                    goToLeaderboard();
+                }
+            }
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [timer, goToLeaderboard, pageState, pageStates.QUESTION]);
+
+    return (<>
+
         {pageState === pageStates.MAIN_MENU ? <>
         <GameMainMenu
             onSubmitName={(name, section) => {
@@ -128,7 +170,8 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
         <GameQuestion
             displayName={localPlayerObj.name}
             chartData={chartData}
-            questionTime={15}
+            questionTime={questionTime}
+            timer={timer}
             endQuestion={goToLeaderboard}
             selectAnswer={handleAnswerSubmit}
         />
@@ -139,18 +182,26 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
             player={localPlayerObj}
             chartData={chartData}
             topPlayers={topPlayers}
-            answerTime={answerTime}
         />
         </> : <></>}
 
         {pageState === pageStates.REVIEW ? <>
         <GameReview
-            localPlayer={localPlayerObj}
+            player={localPlayerObj}
             chartsData={questions}
-            playersList={players}
-            answerTime={answerTime}
+            topPlayers={topPlayers}
         />
         </> : <></>}
+
+        <Modal show={showKickModal} onHide={handleCloseKick} aria-labelledby="contained-modal-title-vcenter" centered>
+            <Modal.Header closeButton>
+                <Modal.Title>Kicked From Game</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                You've been kicked from the game and removed from the database.
+                Contact the administrator for more information.
+            </Modal.Body>
+        </Modal>
 
         <br />
         <DevPanel
@@ -159,11 +210,11 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
             goToReview={goToReview}
             goToQuestion={goToQuestion}
             goToWaitingRoom={goToWaitingRoom}
-            displayName={localPlayerObj.name}
+            displayName={localPlayerObj.name==null?"":localPlayerObj.name}
             setDisplayName={(name) => setLocalPlayerObj({...localPlayerObj, "name":name})}
         />
-        </>
-    );
+    
+    </>);
 }
 
 GamePage.propTypes = {

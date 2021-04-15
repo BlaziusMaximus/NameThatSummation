@@ -13,15 +13,16 @@ import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 
 
-const GameLeaderboard = ({ player, chartData, topPlayers, answerTime }) => {
+const GameLeaderboard = ({ player, chartData, topPlayers }) => {
 
     const localPlayer = topPlayers.find(p => p.id===player.id)===undefined ? null : player;
 
-    return (
-        <>
+    return (<>
+
         <h2>Name: {player.name}</h2>
-        <h3>Score: {answerTime!=null?answerTime:"nah"}</h3>
+        <h3>Score: {player.score}</h3>
         <br />
+
         <Container fluid>
             <Row>
                 <Col xs={8}>
@@ -32,8 +33,13 @@ const GameLeaderboard = ({ player, chartData, topPlayers, answerTime }) => {
                     </Card.Body>
                     <Card.Footer>
                         {chartData.renderChoices.map((e,index) => (
-                        <Button id={index} key={index} disabled style={{margin: "0 2%"}}>
-                                <MathComponent tex={`y = ${e}`} />
+                        <Button
+                            id={index}
+                            key={index}
+                            disabled
+                            variant={index===chartData.answerIndex?"success":"primary"}
+                            style={{margin: "0 2%"}}>
+                                <MathComponent tex={`y = ${e}`} display={false} />
                         </Button>
                         ))}
                     </Card.Footer>
@@ -69,15 +75,14 @@ const GameLeaderboard = ({ player, chartData, topPlayers, answerTime }) => {
                 </Col>
             </Row>
         </Container>
-        </>
-    );
+    
+    </>);
 }
 
 GameLeaderboard.propTypes = {
     player: PropTypes.object.isRequired,
     chartData: PropTypes.object.isRequired,
     topPlayers: PropTypes.array.isRequired,
-    answerTime: PropTypes.number.isRequired,
 }
 
 export default GameLeaderboard;

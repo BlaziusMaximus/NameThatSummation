@@ -9,58 +9,60 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Tab from 'react-bootstrap/Tab';
 import ListGroup from 'react-bootstrap/ListGroup';
+import Table from 'react-bootstrap/Table';
 
 import { MathComponent } from 'mathjax-react';
 
 
-const GameReview = ({ localPlayer, chartsData, playersList, answerTime }) => {
+const GameReview = ({ player, chartsData, topPlayers }) => {
 
-    let rankedPlayers = playersList.sort((a,b) => (a.name > b.name) ? 1 : -1);
-    console.log(rankedPlayers)
-    let topPlayers = rankedPlayers.length >= 5 ? rankedPlayers.slice(0,5) : rankedPlayers;
-    // let localPlayer = null; // rankedPlayers.find(p => p.id == thisPlayer.id) == undefined ? null : thisPlayer;
+    const localPlayer = topPlayers.find(p => p.id===player.id)===undefined ? null : player;
 
-    return (
-        <>
-        <h2>Name: {localPlayer.name}</h2>
-        <h3>Score: {answerTime!=null?answerTime:"nah"}</h3>
+    return (<>
+
+        <h2>Name: {player.name}</h2>
+        <h3>Score: {player.score}</h3>
         <br />
+
         <Container fluid>
         <Row>
             <Col xs={8}>
             <Tab.Container id="list-group-tabs-example" defaultActiveKey={chartsData[0].id}>
             <Row>
-                <Col sm={4}>
+                <Col sm={3}>
                     <ListGroup>
                         {chartsData.map((chart,index) => (
-                        <ListGroup.Item href={chart.id} key={chart.id}>
-                            Question {index}: {chart.id}
+                        <ListGroup.Item href={chart.id} key={chart.id} style={{cursor: "pointer"}}>
+                            Q{index+1}: {chart.id}
                         </ListGroup.Item>
                         ))}
                     </ListGroup>
-                    <br />
-                    <h3>Answers:</h3>
-                    {localPlayer.answers.map((ans) => (
-                        <p>{ans}</p>
-                    ))}
                 </Col>
-                <Col sm={8}>
+                <Col sm={9}>
                 <Tab.Content>
                     {chartsData.map((chart,index) => (
                     <Tab.Pane eventKey={chart.id} key={chart.id}>
-                    <Card style={{height:"80vh"}} className="text-center">
-                        <Card.Header as="h5">Time Spent on Question: {localPlayer.times[index]}s</Card.Header>
+                    <Card style={{height:"60vh"}} className="text-center">
+                        <Card.Header as="h5">Time Spent on Question: {player.times[index]}s</Card.Header>
                         <Card.Body>
                             <GameChart data={[chart]} />
                         </Card.Body>
                         <Card.Footer>
                             {chart.renderChoices.map((e, expindex) => (
                             <Button disabled id={e} key={e} variant={chart.answerIndex===expindex?"success":"primary"} style={{margin: "0 2%"}}>
-                                <MathComponent tex={`y = ${e}`} style={{pointerEvents:"none;"}} />
+                                <MathComponent tex={`y = ${e}`} display={false} />
                             </Button>
                             ))}
                         </Card.Footer>
                     </Card>
+                    <h3>Wrong Answers:</h3>
+                    <ListGroup horizontal>
+                    {player.wrongAnswers[chart.id]!==undefined ? player.wrongAnswers[chart.id].map((ans) => (
+                        <ListGroup.Item key={ans+"wrong"}>
+                            <MathComponent tex={`y = ${chart.renderChoices[ans]}`} display={false} />
+                        </ListGroup.Item>
+                    )) : <></>}
+                    </ListGroup>
                     </Tab.Pane>
                     ))}
                 </Tab.Content>
@@ -70,26 +72,42 @@ const GameReview = ({ localPlayer, chartsData, playersList, answerTime }) => {
             </Col>
             <Col>
                 <h1>LEADERBOARD</h1>
-                <ul>
-                    {topPlayers.map(player =>  <li key={player.name+""+player.city}>{player.name}</li> )}
-                </ul>
-                <p key="ellipsis1">...</p>
-                {localPlayer == null ? <></> : (<>
-                    <ul><li key="localPlayer">{localPlayer.name}</li></ul>
-                    <p key="ellipsis2">...</p>
-                </>)}
+                <Table striped bordered>
+                <thead>
+                    <tr>
+                        <th>Top Players</th>
+                        <th>Scores</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {topPlayers.map(player =>
+                    <tr key={player.name+""+player.score}>
+                        <td>{player.name}</td>
+                        <td>{player.score}</td>
+                    </tr>
+                    )}
+                    <tr key="ellipsis">
+                        <td colSpan={2} style={{textAlign: "center"}}>...</td>
+                    </tr>
+                    {localPlayer == null ? <></> : (
+                    <tr key="localPlayer">
+                        <td>{localPlayer.name}</td>
+                        <td>{localPlayer.score}</td>
+                    </tr>
+                    )}
+                </tbody>
+                </Table>
             </Col>
         </Row>
         </Container>
-        </>
-    );
+    
+    </>);
 }
 
 GameReview.propTypes = {
-    localPlayer: PropTypes.object.isRequired,
+    player: PropTypes.object.isRequired,
     chartsData: PropTypes.array.isRequired,
-    playersList: PropTypes.array.isRequired,
-    answerTime: PropTypes.number.isRequired,
+    topPlayers: PropTypes.array.isRequired,
 }
 
 export default GameReview;
