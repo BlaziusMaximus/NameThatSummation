@@ -73,7 +73,9 @@ function App() {
     React.useEffect(() => {
         db.collection("adminVars").doc("GameState").onSnapshot((doc) => {
             console.log(doc.data());
-            setAdminGameState(doc.data());
+            if (doc.data() !== undefined) {
+                setAdminGameState(doc.data());
+            }
 
             db.collection("playersDB").get().then(playersDB => {
                 setPlayers(playersDB.docs.map(doc => doc.data()))
