@@ -13,7 +13,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import { MathComponent } from 'mathjax-react';
 
 
-const GameReview = ({ localPlayer, chartsData, playersList, answerTime }) => {
+const AdminReview = ({ chartsData, playersList }) => {
 
     let rankedPlayers = playersList.sort((a,b) => (a.name > b.name) ? 1 : -1);
     console.log(rankedPlayers)
@@ -22,9 +22,6 @@ const GameReview = ({ localPlayer, chartsData, playersList, answerTime }) => {
 
     return (
         <>
-        <h2>Name: {localPlayer.name}</h2>
-        <h3>Score: {answerTime!=null?answerTime:"nah"}</h3>
-        <br />
         <Container fluid>
         <Row>
             <Col xs={8}>
@@ -38,18 +35,12 @@ const GameReview = ({ localPlayer, chartsData, playersList, answerTime }) => {
                         </ListGroup.Item>
                         ))}
                     </ListGroup>
-                    <br />
-                    <h3>Answers:</h3>
-                    {localPlayer.answers.map((ans) => (
-                        <p>{ans}</p>
-                    ))}
                 </Col>
                 <Col sm={8}>
                 <Tab.Content>
                     {chartsData.map((chart,index) => (
                     <Tab.Pane eventKey={chart.id} key={chart.id}>
                     <Card style={{height:"80vh"}} className="text-center">
-                        <Card.Header as="h5">Time Spent on Question: {localPlayer.times[index]}s</Card.Header>
                         <Card.Body>
                             <GameChart data={[chart]} />
                         </Card.Body>
@@ -73,11 +64,6 @@ const GameReview = ({ localPlayer, chartsData, playersList, answerTime }) => {
                 <ul>
                     {topPlayers.map(player =>  <li key={player.name+""+player.city}>{player.name}</li> )}
                 </ul>
-                <p key="ellipsis1">...</p>
-                {localPlayer == null ? <></> : (<>
-                    <ul><li key="localPlayer">{localPlayer.name}</li></ul>
-                    <p key="ellipsis2">...</p>
-                </>)}
             </Col>
         </Row>
         </Container>
@@ -85,11 +71,11 @@ const GameReview = ({ localPlayer, chartsData, playersList, answerTime }) => {
     );
 }
 
-GameReview.propTypes = {
+AdminReview.propTypes = {
     localPlayer: PropTypes.object.isRequired,
     chartsData: PropTypes.array.isRequired,
     playersList: PropTypes.array.isRequired,
     answerTime: PropTypes.number.isRequired,
 }
 
-export default GameReview;
+export default AdminReview;

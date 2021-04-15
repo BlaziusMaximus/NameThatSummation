@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 const GameChart = ({ data }) => {
     return (
         <ResponsiveLine
-            data={[data]}
+            data={data}
             margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
             xScale={{ type: 'point' }}
             yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: true, reverse: false }}
@@ -68,7 +68,10 @@ const GameChart = ({ data }) => {
 };
 
 GameChart.propTypes = {
-    data: PropTypes.object.isRequired,
+    data: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.array,
+    ]).isRequired,
 }
 
 export default GameChart;

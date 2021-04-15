@@ -38,20 +38,24 @@ function App() {
     const [questions, setQuestions] = useState([]);
     React.useEffect(() => {
         db.collection("questions").onSnapshot((snapshot) => {
-            setQuestions(snapshot.docs.map((doc, index) => {
-                let {xEnd, xStart, xInc, evalChoices, renderChoices, answerIndex, maxScore} = doc.data();
+            setQuestions(snapshot.docs.map((doc) => {
+                let { xEnd, xStart, xInc, evalChoices, renderChoices, answerIndex, maxScore } = doc.data();
                 return {
-                    "id": `summation function ${index+1}`,
+                    "id": doc.id,
                     "color": "hsl(24, 70%, 50%)",
                     "data": [...Array(Math.floor((xEnd-xStart)/parseFloat(xInc))+1).keys()].map(e => (
                         { "x":String(e), "y":evaluatex(evalChoices[answerIndex])({x:e}) }
                     )),
-                    "answerChoices": evalChoices,
-                    "latexExp": renderChoices,
-                    "answer": answerIndex,
+                    "renderChoices": renderChoices,
+                    "answerIndex": answerIndex,
                     "maxScore": maxScore,
+                    "evalChoices": evalChoices,
+                    "xEnd": xEnd,
+                    "xStart": xStart,
+                    "xInc": xInc,
                 };
-            }));
+            }).sort((a,b) => parseInt(a.id.substring(1))>parseInt(b.id.substring(1))?1:-1));
+
         });
         console.log("fetched questions from firebase")
     }, []);
@@ -61,7 +65,6 @@ function App() {
         questionIndex: null,
     });
     React.useEffect(() => {
-
         db.collection("adminVars").doc("GameState").set(adminGameState);
 
         db.collection("adminVars").doc("GameState").onSnapshot((doc) => {
@@ -99,9 +102,8 @@ function App() {
                         "id": "",
                         "color": null,
                         "data": [],
-                        "answerChoices": [],
-                        "latexExp": [],
-                        "answer": null,
+                        "renderChoices": [],
+                        "answerIndex": null,
                         "maxScore": null,
                     }}
                     players={players}

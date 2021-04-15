@@ -27,9 +27,10 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
     const [questionIndex, setQuestionIndex] = useState(null);
 
     const [localPlayerObj, setLocalPlayerObj] = useState({
-        "name": "_",
-        "score": 0,
-        "section": 1337,
+        "id": null,
+        "name": null,
+        "score": null,
+        "section": null,
         "answers": [],
         "wrongAnswers": [],
         "times": [],
@@ -38,11 +39,13 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
     const goToMainMenu = () => {
         setPageState(pageStates.MAIN_MENU);
     }
-    const goToWaitingRoom = (name) => {
+    const goToWaitingRoom = (name, section) => {
         setPageState(pageStates.WAITING_ROOM);
         db.collection("playersDB").doc(name).set({
             ...localPlayerObj,
+            id: Math.floor(Math.random()*Date.now()),
             "name": name,
+            "section": section,
         });
     }
     const goToQuestion = React.useCallback(() => {
@@ -72,7 +75,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
         setLocalPlayerObj({
             ...localPlayerObj,
             answers: [...(localPlayerObj.answers),a],
-            wrongAnswers: a===chartData.answer ? [...(localPlayerObj.wrongAnswers)] : [...(localPlayerObj.wrongAnswers),a],
+            wrongAnswers: a===chartData.answerIndex ? [...(localPlayerObj.wrongAnswers)] : [...(localPlayerObj.wrongAnswers),a],
             times: [...(localPlayerObj.times),t],
             score: localPlayerObj.score + Math.floor(chartData.maxScore/t),
         });
@@ -94,11 +97,22 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
         });
     }
 
+    const [topPlayers, setTopPlayers] = useState([]);
+    React.useEffect(() => {
+        setTopPlayers(
+            players.filter(a => Number.isInteger(a.score))
+                   .sort((a,b) => a.score<b.score ? 1 : -1)
+                   .slice(0,5));
+    }, [players]);
+
     return (
         <>
         {pageState === pageStates.MAIN_MENU ? <>
         <GameMainMenu
-            onSubmitName={(name) => {setLocalPlayerObj({...localPlayerObj, "name":name}); goToWaitingRoom(name);}}
+            onSubmitName={(name, section) => {
+                setLocalPlayerObj({...localPlayerObj, "name":name, "section": section});
+                goToWaitingRoom(name, section);
+            }}
             canSubmitName={waitingRoomIsOpen}
         />
         </> : <></>}
@@ -122,9 +136,9 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
 
         {pageState === pageStates.LEADERBOARD ? <>
         <GameLeaderboard
-            displayName={localPlayerObj.name}
+            player={localPlayerObj}
             chartData={chartData}
-            playersList={players}
+            topPlayers={topPlayers}
             answerTime={answerTime}
         />
         </> : <></>}

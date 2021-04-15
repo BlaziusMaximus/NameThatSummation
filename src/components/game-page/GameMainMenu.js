@@ -23,7 +23,7 @@ const GameMainMenu = ({ onSubmitName, canSubmitName }) => {
 
     const handleNameSubmit = (e) => {
         e.preventDefault();
-        onSubmitName(e.target[0].value);
+        onSubmitName(e.target[0].value, e.target[1].value);
     }
 
     return (<>
@@ -73,18 +73,29 @@ const GameMainMenu = ({ onSubmitName, canSubmitName }) => {
             </Row>
             <Row className="justify-content-md-center">
                 <Col sm={8}>
-                    <Form onSubmit={handleNameSubmit}>
-                        <InputGroup>
-                            <FormControl
-                                placeholder="Display Name"
-                                aria-label="Display Name"
-                                aria-describedby="display-name-form"
-                                />
-                            <InputGroup.Append>
-                                <Button variant="outline-primary" type="submit" disabled={!canSubmitName}>Submit</Button>
-                            </InputGroup.Append>
-                        </InputGroup>
-                    </Form>
+                <Form onSubmit={handleNameSubmit}>
+                <Form.Row>
+                <InputGroup>
+                    <Col style={{padding: "0"}}>
+                    <FormControl
+                        placeholder="Display Name"
+                        aria-label="Display Name"
+                        aria-describedby="display-name-form"
+                    />
+                    </Col>
+                    <Col style={{padding: "0"}}>
+                    <FormControl
+                        placeholder="Section"
+                        aria-label="Section"
+                        aria-describedby="section-form"
+                    />
+                    </Col>
+                    <InputGroup.Append>
+                        <Button variant="outline-primary" type="submit" disabled={!canSubmitName}>Submit</Button>
+                    </InputGroup.Append>
+                </InputGroup>
+                </Form.Row>
+                </Form>
                 </Col>
             </Row>
         </Container>
