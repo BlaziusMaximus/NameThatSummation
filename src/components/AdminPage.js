@@ -1,96 +1,95 @@
 import {useState} from 'react';
 import PropTypes from 'prop-types';
 
-import { db } from "../firebase";
-
 import AdminWaiting from './admin-page/AdminWaiting';
 import AdminPlaying from './admin-page/AdminPlaying';
 import AdminReview from './admin-page/AdminReview';
 import AdminOffline from './admin-page/AdminOffline';
 
+import {
+    deletePlayers,
+    kickPlayer,
+    setFirebaseGameState,
+    uploadQuestions,
+    deleteQuestions,
+    clearAnswers,
+} from './AdminFirebase';
 
-const AdminPage = ({ gameStates, gameState, playersList, adminGameState, setAdminGameState, questions }) => {
+
+const AdminPage = ({ pageStates, pageState, playersList, localGameState, setLocalGameState, questions, playerAnswers }) => {
 
     const initializeGame = () => {
         let newGameState = {
-            state: gameStates.WAITING,
+            pageState: pageStates.WAITING,
             questionIndex: null,
         };
-        setAdminGameState(newGameState);
-        db.collection("adminVars").doc("GameState").set(newGameState);
-        console.log("gameState set");
+        setLocalGameState(newGameState);
+        setFirebaseGameState(newGameState);
     }
     const clearGame = () => {
         let newGameState = {
-            state: gameStates.OFFLINE,
+            pageState: pageStates.OFFLINE,
             questionIndex: null,
         };
-        setAdminGameState(newGameState);
-        db.collection("adminVars").doc("GameState").set(newGameState);
-        console.log("gameState set");
+        setLocalGameState(newGameState);
+        setFirebaseGameState(newGameState);
 
-        playersList.forEach(player => {
-            db.collection('playersDB').doc(player.name).delete();
-            console.log("player deleted");
-        });
+        deletePlayers(playersList);
+        deleteQuestions(questions);
     }
     const startGame = () => {
         let newGameState = {
-            state: gameStates.PLAYING,
+            pageState: pageStates.PLAYING,
             questionIndex: 0,
         };
-        setAdminGameState(newGameState);
-        db.collection("adminVars").doc("GameState").set(newGameState);
-        console.log("gameState set");
+        setLocalGameState(newGameState);
+        setFirebaseGameState(newGameState);
+        console.log(newGameState)
     }
     const prevQuestion = () => {
-        let qIndex = adminGameState.questionIndex - 1;
+        let qIndex = localGameState.questionIndex - 1;
         if (qIndex >= 0) {
             let newGameState = {
-                state: gameStates.PLAYING,
+                pageState: pageStates.PLAYING,
                 questionIndex: qIndex,
             };
-            setAdminGameState(newGameState);
-            db.collection("adminVars").doc("GameState").set(newGameState);
-            console.log("gameState set");
+            setLocalGameState(newGameState);
+            setFirebaseGameState(newGameState);
+            clearAnswers();
         }
     }
     const nextQuestion = () => {
-        let qIndex = adminGameState.questionIndex + 1;
+        let qIndex = localGameState.questionIndex + 1;
+        let newGameState = {};
         if (qIndex < questions.length) {
-            let newGameState = {
-                state: gameStates.PLAYING,
+            newGameState = {
+                pageState: pageStates.PLAYING,
                 questionIndex: qIndex,
             };
-            setAdminGameState(newGameState);
-            db.collection("adminVars").doc("GameState").set(newGameState);
-            console.log("gameState set");
         } else {
-            let newGameState = {
-                state: gameStates.REVIEW,
+            newGameState = {
+                pageState: pageStates.REVIEW,
                 questionIndex: null,
             };
-            setAdminGameState(newGameState);
-            db.collection("adminVars").doc("GameState").set(newGameState);
-            console.log("gameState set");
         }
-    }
-
-    const kickPlayer = (player) => {
-        db.collection('playersDB').doc(player.name).delete();
+        setLocalGameState(newGameState);
+        setFirebaseGameState(newGameState);
+        clearAnswers();
     }
 
     return (<>
 
-        {gameState === gameStates.OFFLINE ? <>
+        {pageState === pageStates.OFFLINE ? <>
             <AdminOffline
                 initializeGame={initializeGame}
                 clearGame={clearGame}
                 playersList={playersList}
+                uploadQuestions={uploadQuestions}
+                noQuestions={questions.length===0}
             />
         </> : <></>}
 
-        {gameState === gameStates.WAITING ? <>
+        {pageState === pageStates.WAITING ? <>
             <AdminWaiting
                 playersList={playersList}
                 startGame={startGame}
@@ -99,18 +98,19 @@ const AdminPage = ({ gameStates, gameState, playersList, adminGameState, setAdmi
             />
         </> : <></>}
 
-        {gameState === gameStates.PLAYING ? <>
+        {pageState === pageStates.PLAYING ? <>
             <AdminPlaying
                 quitGame={clearGame}
                 prevQuestion={prevQuestion}
                 nextQuestion={nextQuestion}
                 questions={questions}
-                adminGameState={adminGameState}
+                localGameState={localGameState}
                 playersList={playersList}
+                playerAnswers={playerAnswers}
             />
         </> : <></>}
         
-        {gameState === gameStates.REVIEW ? <>
+        {pageState === pageStates.REVIEW ? <>
             <AdminReview
                 chartsData={questions}
                 playersList={playersList}
@@ -122,13 +122,14 @@ const AdminPage = ({ gameStates, gameState, playersList, adminGameState, setAdmi
 }
 
 AdminPage.propTypes = {
-    gameStates: PropTypes.object.isRequired,
-    gameState: PropTypes.string.isRequired,
+    pageStates: PropTypes.object.isRequired,
+    pageState: PropTypes.string.isRequired,
     playersList: PropTypes.array.isRequired,
     chartData: PropTypes.object,
-    adminGameState: PropTypes.object.isRequired,
-    setAdminGameState: PropTypes.func.isRequired,
+    localGameState: PropTypes.object.isRequired,
+    setLocalGameState: PropTypes.func.isRequired,
     questions: PropTypes.array.isRequired,
+    playerAnswers: PropTypes.object.isRequired,
 }
 
 export default AdminPage;

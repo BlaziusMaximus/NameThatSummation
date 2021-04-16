@@ -1,25 +1,41 @@
-import {useState} from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 
-import Button from 'react-bootstrap/Button';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Card from 'react-bootstrap/Card';
-import Tabs from 'react-bootstrap/Tabs';
-import Tab from 'react-bootstrap/Tab';
-import Table from 'react-bootstrap/Table';
-import ListGroup from 'react-bootstrap/ListGroup';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import {
+    Button,
+    Container,
+    Row,
+    Col,
+    Card,
+    Tabs,
+    Tab,
+    Table,
+    ListGroup,
+    ButtonGroup,
+    ProgressBar,
+} from 'react-bootstrap';
 
 import GameChart from '../GameChart';
 
 import { MathComponent } from 'mathjax-react';
 
 
-const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, adminGameState, playersList }) => {
+const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGameState, playersList, playerAnswers }) => {
 
     const [tab, setTab] = useState("players");
+
+    const [answerStats, setAnswerStats] = useState([0,0,0,0]);
+    React.useEffect(() => {
+        let newStats = [0,0,0,0];
+        playersList.forEach(player => {
+            if (playerAnswers[player.id] !== undefined) {
+                newStats[playerAnswers[player.id]] += 1;
+                console.log(player.id, playerAnswers[player.id]);
+            }
+        });
+        console.log(newStats);
+        setAnswerStats(newStats);
+    }, [playerAnswers, playersList]);
 
     return (<>
 
@@ -32,7 +48,7 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, adminGa
                 variant="secondary"
                 size="lg"
                 block
-                disabled={adminGameState.questionIndex === 0}>
+                disabled={localGameState.questionIndex === 0}>
                     Previous Question
             </Button>
             <Button
@@ -51,20 +67,30 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, adminGa
             <Col sm={5}>
             <Card style={{height:"80vh"}} className="text-center">
                 <Card.Body>
-                    <GameChart data={[questions[adminGameState.questionIndex]]} />
+                    <GameChart data={[questions[localGameState.questionIndex]]} />
                 </Card.Body>
                 <Card.Footer>
-                {questions[adminGameState.questionIndex].renderChoices.map((e,index) => (
+                {questions[localGameState.questionIndex].renderChoices.map((e,index) => (
                     <Button
                         id={index}
                         key={index}
                         disabled
                         style={{margin: "0 2%"}}
-                        variant={questions[adminGameState.questionIndex].answerIndex===index?"success":"primary"}>
+                        variant={questions[localGameState.questionIndex].answerIndex===index?"success":"primary"}>
                             <MathComponent tex={`y = ${e}`} display={false} />
                     </Button>
                 ))}
                 </Card.Footer>
+                <br />
+                <div>
+                {questions[localGameState.questionIndex].renderChoices.map((e,index) => (
+                    <ProgressBar
+                        label={`${answerStats[index]/playersList.length*100}%`}
+                        variant={questions[localGameState.questionIndex].answerIndex===index?"success":"primary"}
+                        now={answerStats[index]/playersList.length*100}
+                    />
+                ))}
+                </div>
             </Card>
             </Col>
             <Col style={{padding: "0"}}>
@@ -92,7 +118,7 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, adminGa
                 </Container>
                 </Tab>
                 <Tab eventKey="questions" title="Questions"><Container>
-                <Tab.Container defaultActiveKey={`${adminGameState.questionIndex}`}>
+                <Tab.Container defaultActiveKey={`${localGameState.questionIndex}`}>
                 <Row>
                     <Col sm={4}>
                     <ListGroup style={{height:"80vh", overflowY: "scroll"}}>
@@ -101,7 +127,7 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, adminGa
                             href={`${index}`}
                             key={`${index}`}
                             style={{cursor: "pointer", paddingLeft: "0", paddingRight: "0"}}
-                            variant={index===adminGameState.questionIndex?"primary":(index<adminGameState.questionIndex?"secondary":"")}>
+                            variant={index===localGameState.questionIndex?"primary":(index<localGameState.questionIndex?"secondary":"")}>
                                 <Container>
                                 <Row>
                                     {/* <Col xs={3} style={{margin: "auto"}}>
@@ -156,8 +182,9 @@ AdminPlaying.propTypes = {
     prevQuestion: PropTypes.func.isRequired,
     nextQuestion: PropTypes.func.isRequired,
     questions: PropTypes.array.isRequired,
-    adminGameState: PropTypes.object.isRequired,
+    localGameState: PropTypes.object.isRequired,
     playersList: PropTypes.array.isRequired,
+    playerAnswers: PropTypes.object.isRequired,
 }
 
 export default AdminPlaying;

@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 
-import Button from 'react-bootstrap/Button';
-import Table from 'react-bootstrap/Table';
+import {
+    Button,
+    Table,
+} from 'react-bootstrap';
 
 
 const AdminWaiting = ({ playersList, startGame, quitGame, kickPlayer }) => {

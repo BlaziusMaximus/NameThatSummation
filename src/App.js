@@ -16,11 +16,17 @@ import TeamPageBody from './components/team-page/TeamPageBody';
 import AdminPage from './components/AdminPage';
 import GamePage from './components/GamePage';
 
+import {
+    deletePlayers,
+    setFirebaseGameState,
+    deleteQuestions,
+} from './components/AdminFirebase';
+
 import './App.css';
 
 function App() {
 
-    const adminGameStates = {
+    const adminPageStates = {
         OFFLINE: "OFFLINE",
         WAITING: "WAITING",
         PLAYING: "PLAYING",
@@ -67,7 +73,7 @@ function App() {
     }, []);
 
     const [adminGameState, setAdminGameState] = useState({
-        state: adminGameStates.OFFLINE,
+        pageState: adminPageStates.OFFLINE,
         questionIndex: null,
     });
     React.useEffect(() => {
@@ -81,7 +87,18 @@ function App() {
                 setPlayers(playersDB.docs.map(doc => doc.data()))
             });
         });
-        console.log("fetched admins variables from firebase")
+        console.log("fetched adminVars.GameState from firebase")
+    }, []);
+
+    const [playerAnswers, setPlayerAnswers] = useState({});
+    React.useEffect(() => {
+        db.collection("adminVars").doc("PlayerAnswers").onSnapshot((doc) => {
+            console.log(doc.data());
+            if (doc.data() !== undefined) {
+                setPlayerAnswers(doc.data());
+            }
+        });
+        console.log("fetched adminVars.PlayerAnswers from firebase");
     }, []);
 
     return (
@@ -98,6 +115,17 @@ function App() {
                     <LinkContainer to="/admin-page">
                         <Button>ADMIN PAGE</Button>
                     </LinkContainer>
+                    <Button onClick={ () => {
+                        let newGameState = {
+                            pageState: adminPageStates.OFFLINE,
+                            questionIndex: null,
+                        };
+                        setAdminGameState(newGameState);
+                        setFirebaseGameState(newGameState);
+
+                        deletePlayers(players);
+                        deleteQuestions(questions);
+                    }} id="cleargame" variant="danger" size="lg" block>Clear Game</Button>
                 </nav>
             </Route>
             <Route path="/team-page">
@@ -118,17 +146,19 @@ function App() {
                     }}
                     players={players}
                     adminQuestionIndex={adminGameState.questionIndex}
-                    waitingRoomIsOpen={adminGameState.state === adminGameStates.WAITING}
+                    waitingRoomIsOpen={adminGameState.pageState === adminPageStates.WAITING}
+                    playerAnswers={playerAnswers}
                 />
             </Route>
             <Route path="/admin-page">
                 <AdminPage
-                    gameStates={adminGameStates}
-                    gameState={adminGameState.state}
+                    pageStates={adminPageStates}
+                    pageState={adminGameState.pageState}
                     playersList={players}
-                    adminGameState={adminGameState}
-                    setAdminGameState={setAdminGameState}
+                    localGameState={adminGameState}
+                    setLocalGameState={setAdminGameState}
                     questions={questions}
+                    playerAnswers={playerAnswers}
                 />
             </Route>
         </Switch>

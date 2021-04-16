@@ -1,21 +1,24 @@
 import {useState} from 'react';
 import PropTypes from 'prop-types';
 
+import {
+    Container,
+    Row,
+    Col,
+    Card,
+    Button,
+    Table,
+} from 'react-bootstrap';
+
 import { MathComponent } from 'mathjax-react';
 
 import GameChart from '../GameChart';
 
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
-import Table from 'react-bootstrap/Table';
-
 
 const GameLeaderboard = ({ player, chartData, topPlayers }) => {
 
-    const localPlayer = topPlayers.find(p => p.id===player.id)===undefined ? null : player;
+    const localPlayer = topPlayers.find(p => p.id===player.id)===undefined ? player : null;
+    console.log(topPlayers.find(p => p.id===player.id))
 
     return (<>
 
@@ -48,29 +51,34 @@ const GameLeaderboard = ({ player, chartData, topPlayers }) => {
                 <Col>
                     <h1>LEADERBOARD</h1>
                     <Table striped bordered>
-                    <thead>
-                        <tr>
-                            <th>Top Players</th>
-                            <th>Scores</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {topPlayers.map(player =>
-                        <tr key={player.name+""+player.score}>
-                            <td>{player.name}</td>
-                            <td>{player.score}</td>
-                        </tr>
-                        )}
-                        <tr key="ellipsis">
-                            <td colSpan={2} style={{textAlign: "center"}}>...</td>
-                        </tr>
-                        {localPlayer == null ? <></> : (
-                        <tr key="localPlayer">
-                            <td>{localPlayer.name}</td>
-                            <td>{localPlayer.score}</td>
-                        </tr>
-                        )}
-                    </tbody>
+                        <thead>
+                            <tr>
+                                <th>Top Players</th>
+                                <th>Scores</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {topPlayers.map(topPlayer =>
+                            <tr
+                                key={topPlayer.name+""+topPlayer.score}
+                                style={topPlayer.id===player.id?{backgroundColor: "lightgreen"}:{}}>
+                                    {topPlayer.id===player.id
+                                    ? <td><b>{topPlayer.name}</b></td>
+                                    : <td>{topPlayer.name}</td>
+                                    }
+                                    <td>{topPlayer.score}</td>
+                            </tr>
+                            )}
+                            {localPlayer == null ? <></> : (<>
+                            <tr key="ellipsis">
+                                <td colSpan={2} style={{textAlign: "center"}}>...</td>
+                            </tr>
+                            <tr key="localPlayer" style={{backgroundColor: "lightgreen"}}>
+                                <td><b>{localPlayer.name}</b></td>
+                                <td>{localPlayer.score}</td>
+                            </tr>
+                            </>)}
+                        </tbody>
                     </Table>
                 </Col>
             </Row>

@@ -2,14 +2,16 @@ import PropTypes from 'prop-types';
 
 import GameChart from '../GameChart';
 
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
-import Tab from 'react-bootstrap/Tab';
-import ListGroup from 'react-bootstrap/ListGroup';
-import Table from 'react-bootstrap/Table';
+import {
+    Container,
+    Row,
+    Col,
+    Card,
+    Button,
+    Tab,
+    ListGroup,
+    Table,
+} from 'react-bootstrap';
 
 import { MathComponent } from 'mathjax-react';
 

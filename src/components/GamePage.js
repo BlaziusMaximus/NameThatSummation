@@ -14,7 +14,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
 
-const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRoomIsOpen }) => {
+const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRoomIsOpen, playerAnswers }) => {
 
     const questionTime = 15;
 
@@ -97,7 +97,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
             ...localPlayerObj,
             answers: newAnswer?[...(localPlayerObj.answers),a]:[...(localPlayerObj.answers)],
             wrongAnswers: was,
-            times: newAnswer?[...(localPlayerObj.times),t]:[...(localPlayerObj.times)],
+            times: newAnswer?[...(localPlayerObj.times),questionTime-t]:[...(localPlayerObj.times)],
             score: localPlayerObj.score + newAnswer?Math.floor(score):0,
         };
         setLocalPlayerObj({
@@ -106,6 +106,13 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
         db.collection('playersDB').doc(localPlayerObj.name).set({
             ...newPlayerObj,
         });
+
+        let newAnswers = playerAnswers;
+        newAnswers[localPlayerObj.id] = a;
+        db.collection('adminVars').doc('PlayerAnswers').set({
+            ...newAnswers,
+        });
+        console.log(playerAnswers, newAnswers);
     }
 
     const [topPlayers, setTopPlayers] = useState([]);
@@ -223,6 +230,7 @@ GamePage.propTypes = {
     players: PropTypes.array.isRequired,
     adminQuestionIndex: PropTypes.number,
     waitingRoomIsOpen: PropTypes.bool.isRequired,
+    playerAnswers: PropTypes.object.isRequired,
 };
 
 export default GamePage;

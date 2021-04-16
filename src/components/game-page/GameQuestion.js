@@ -31,7 +31,7 @@ const GameQuestion = ({ displayName, chartData, questionTime, timer, endQuestion
         let id = parseInt(e.currentTarget.id);
         let newAnsClicked = answersClicked; newAnsClicked[parseInt(id)] = 1; setAnswersClicked(newAnsClicked);
         
-        selectAnswer(id, questionTime-timer);
+        selectAnswer(id, timer);
         setAnswerChoiceIndex(id);
         setAnswerTime(questionTime-timer);
 
