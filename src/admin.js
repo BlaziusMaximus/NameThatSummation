@@ -24,28 +24,7 @@ export async function loadGame() {
 }
 
 
-// let p1 = { name: 'Mr. Boss', score: 30};
-// let p2 = {
-//     name: 'Donald J. Trump',
-//     score: 54
-// };
 
-// let p3 = {
-//     name: 'Coffin Maker',
-//     score: 27
-// };
-
-// let p4 = {
-//     name: 'Small Kyle',
-//     score: 99
-// };
-
-// let p5 = {
-//     name: 'Homer Simpson',
-//     score: 88
-// };
-
-// let players = [p1, p2, p3, p4, p5];
 let players = [];
 var myMachine;
 export const playerTableRender = function (players) {
