@@ -102,7 +102,7 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGa
                             <tr>
                                 <th>Player</th>
                                 <th>Section</th>
-                                <th>Score</th>
+                                <th>Sore</th>
                                 <th>Time</th>
                             </tr>
                         </thead>
