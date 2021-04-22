@@ -21,7 +21,7 @@ import { MathComponent } from 'mathjax-react';
 
 
 const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGameState, playersList, playerAnswers }) => {
-    console.log("I am hear"):
+    console.log("I am hear");
     const [tab, setTab] = useState("players");
 
     const [answerStats, setAnswerStats] = useState([0,0,0,0]);
@@ -102,7 +102,7 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGa
                             <tr>
                                 <th>Player</th>
                                 <th>Section</th>
-                                <th>Sore</th>
+                                <th>Score</th>
                                 <th>Time</th>
                             </tr>
                         </thead>
