@@ -18,7 +18,6 @@ import {
 import GameChart from '../GameChart';
 
 import { MathComponent } from 'mathjax-react';
-import { scryRenderedComponentsWithType } from 'react-dom/cjs/react-dom-test-utils.development';
 
 
 const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGameState, playersList, playerAnswers }) => {

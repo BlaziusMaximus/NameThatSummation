@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 
-import {
-    GameMainMenu,
-    GameQuestion,
-    GameWaitingRoom,
-    GameLeaderboard,
-    GameReview,
-} from './game-page';
+import GameMainMenu from './game-page/GameMainMenu';
+import GameQuestion from './game-page/GameQuestion';
+import GameWaitingRoom from './game-page/GameWaitingRoom';
+import GameLeaderboard from './game-page/GameLeaderboard';
+import GameReview from './game-page/GameReview';
 
 import DevPanel from './DevPanel';
 
