@@ -22,7 +22,7 @@ import { scryRenderedComponentsWithType } from 'react-dom/cjs/react-dom-test-uti
 
 
 const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGameState, playersList, playerAnswers }) => {
-
+    console.log("I am hear");
     const [tab, setTab] = useState("players");
 
     const [answerStats, setAnswerStats] = useState([0,0,0,0]);
@@ -112,6 +112,7 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGa
                                 <th>Player</th>
                                 <th>Section</th>
                                 <th>Score</th>
+                                <th>Time</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -120,6 +121,7 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGa
                                 <td>{player.name}</td>
                                 <td>{player.section}</td>
                                 <td>{player.score}</td>
+                                <td>{player.times[localGameState.questionIndex]}</td>
                             </tr>
                         )}
                         </tbody>

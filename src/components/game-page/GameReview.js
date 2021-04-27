@@ -80,10 +80,10 @@ const GameReview = ({ player, chartsData, topPlayers }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {topPlayers.map(player =>
-                    <tr key={player.name+""+player.score}>
-                        <td>{player.name}</td>
-                        <td>{player.score}</td>
+                    {topPlayers.map(topplayer =>
+                    <tr key={topplayer.name+""+topplayer.score}>
+                        <td>{topplayer.name}</td>
+                        <td>{topplayer.score}</td>
                     </tr>
                     )}
                     <tr key="ellipsis">
