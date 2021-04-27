@@ -18,6 +18,7 @@ import {
 import GameChart from '../GameChart';
 
 import { MathComponent } from 'mathjax-react';
+import { scryRenderedComponentsWithType } from 'react-dom/cjs/react-dom-test-utils.development';
 
 
 const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGameState, playersList, playerAnswers }) => {
@@ -82,15 +83,23 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGa
                 ))}
                 </Card.Footer>
                 <br />
-                <div>
-                {questions[localGameState.questionIndex].renderChoices.map((e,index) => (
-                    <ProgressBar
-                        label={`${answerStats[index]/playersList.length*100}%`}
-                        variant={questions[localGameState.questionIndex].answerIndex===index?"success":"primary"}
-                        now={answerStats[index]/playersList.length*100}
-                    />
-                ))}
-                </div>
+                <Container>
+                {questions[localGameState.questionIndex].renderChoices.map((e,index) => (<>
+                <Row>
+                    <Col sm={3}>
+                        <MathComponent tex={`y = ${e}`} display={false} />
+                    </Col>
+                    <Col>
+                        <ProgressBar
+                            label={`${answerStats[index]/playersList.length*100}%`}
+                            variant={questions[localGameState.questionIndex].answerIndex===index?"success":"primary"}
+                            now={answerStats[index]/playersList.length*100}
+                        />
+                    </Col>
+                </Row>
+                </>))}
+                </Container>
+                <br />
             </Card>
             </Col>
             <Col style={{padding: "0"}}>
