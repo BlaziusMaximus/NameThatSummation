@@ -1,21 +1,23 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
-import FormControl from 'react-bootstrap/FormControl';
-import Modal from 'react-bootstrap/Modal';
+import {
+    Navbar,
+    Nav,
+    Container,
+    Row,
+    Col,
+    Button,
+    Form,
+    InputGroup,
+    FormControl,
+    Modal,
+} from 'react-bootstrap';
 
 import LinkContainer from 'react-router-bootstrap/lib/LinkContainer';
 
 
-const GameMainMenu = ({ onSubmitName, canSubmitName }) => {
+const GameMainMenu = ({ onSubmitName, canSubmitName, showKickModal, handleCloseKick }) => {
 
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const handleShowSettings = () => setShowSettingsModal(true);
@@ -65,6 +67,16 @@ const GameMainMenu = ({ onSubmitName, canSubmitName }) => {
             <Modal.Footer>
                 <Button variant="secondary" onClick={handleCloseSettings}>Close</Button>
             </Modal.Footer>
+        </Modal>
+
+        <Modal show={showKickModal} onHide={handleCloseKick} aria-labelledby="contained-modal-title-vcenter" centered>
+            <Modal.Header closeButton>
+                <Modal.Title>Kicked From Game</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                You've been kicked from the game and removed from the database.
+                Contact the administrator for more information.
+            </Modal.Body>
         </Modal>
 
         <Container>

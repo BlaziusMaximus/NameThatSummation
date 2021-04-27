@@ -1,4 +1,3 @@
-import {useState} from 'react';
 import PropTypes from 'prop-types';
 
 import {
@@ -18,7 +17,6 @@ import GameChart from '../GameChart';
 const GameLeaderboard = ({ player, chartData, topPlayers }) => {
 
     const localPlayer = topPlayers.find(p => p.id===player.id)===undefined ? player : null;
-    console.log(topPlayers.find(p => p.id===player.id))
 
     return (<>
 

@@ -1,17 +1,20 @@
 import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 
-import { db } from "../firebase";
+import {
+    GameMainMenu,
+    GameQuestion,
+    GameWaitingRoom,
+    GameLeaderboard,
+    GameReview,
+} from './game-page';
 
-import GameMainMenu from './game-page/GameMainMenu';
-import GameQuestion from './game-page/GameQuestion';
-import GameWaitingRoom from './game-page/GameWaitingRoom';
-import GameLeaderboard from './game-page/GameLeaderboard';
-import GameReview from './game-page/GameReview';
 import DevPanel from './DevPanel';
 
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import {
+    setPlayer,
+    setAnswers,
+} from './GameFirebase';
 
 
 const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRoomIsOpen, playerAnswers }) => {
@@ -32,13 +35,13 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
     const [questionIndex, setQuestionIndex] = useState(null);
 
     const [localPlayerObj, setLocalPlayerObj] = useState({
-        "id": null,
-        "name": null,
-        "score": null,
-        "section": null,
-        "answers": [],
-        "wrongAnswers": [],
-        "times": [],
+        id: null,
+        name: null,
+        score: null,
+        section: null,
+        answers: [],
+        wrongAnswers: {},
+        times: [],
     });
 
     const [showKickModal, setShowKickModal] = useState(false);
@@ -54,15 +57,11 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
             ...localPlayerObj,
             id: Math.floor(Math.random()*Date.now()),
             "name": name,
-            "section": section,
+            "section": parseInt(section),
             "score": 0,
         }
-        setLocalPlayerObj({
-            ...newPlayerObj,
-        });
-        db.collection("playersDB").doc(name).set({
-            ...newPlayerObj,
-        });
+        setLocalPlayerObj({...newPlayerObj});
+        setPlayer({...newPlayerObj});
     }
     const goToQuestion = React.useCallback(() => {
         setPageState(pageStates.QUESTION);
@@ -100,18 +99,12 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
             times: newAnswer?[...(localPlayerObj.times),questionTime-t]:[...(localPlayerObj.times)],
             score: localPlayerObj.score + newAnswer?Math.floor(score):0,
         };
-        setLocalPlayerObj({
-            ...newPlayerObj,
-        });
-        db.collection('playersDB').doc(localPlayerObj.name).set({
-            ...newPlayerObj,
-        });
+        setLocalPlayerObj({...newPlayerObj});
+        setPlayer({...newPlayerObj});
 
         let newAnswers = playerAnswers;
         newAnswers[localPlayerObj.id] = a;
-        db.collection('adminVars').doc('PlayerAnswers').set({
-            ...newAnswers,
-        });
+        setAnswers({...newAnswers});
         console.log(playerAnswers, newAnswers);
     }
 
@@ -134,19 +127,15 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
         const interval = setInterval(() => {
             if (pageState === pageStates.QUESTION) {
                 if (timer > 0) {
-                    setTimer(timer => timer-1);
+                    setTimer(timer-1);
                 } else {
                     const newPlayerObj = {
                         ...localPlayerObj,
                         answers: [...(localPlayerObj.answers),null],
                         times: [...(localPlayerObj.times),null],
                     };
-                    setLocalPlayerObj({
-                        ...newPlayerObj,
-                    });
-                    db.collection('playersDB').doc(localPlayerObj.name).set({
-                        ...newPlayerObj,
-                    });
+                    setLocalPlayerObj({...newPlayerObj});
+                    setPlayer({...newPlayerObj});
                     goToLeaderboard();
                 }
             }
@@ -163,6 +152,8 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
                 goToWaitingRoom(name, section);
             }}
             canSubmitName={waitingRoomIsOpen}
+            showKickModal={showKickModal}
+            handleCloseKick={handleCloseKick}
         />
         </> : <></>}
 
@@ -199,16 +190,6 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
             topPlayers={topPlayers}
         />
         </> : <></>}
-
-        <Modal show={showKickModal} onHide={handleCloseKick} aria-labelledby="contained-modal-title-vcenter" centered>
-            <Modal.Header closeButton>
-                <Modal.Title>Kicked From Game</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                You've been kicked from the game and removed from the database.
-                Contact the administrator for more information.
-            </Modal.Body>
-        </Modal>
 
         <br />
         <DevPanel
