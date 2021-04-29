@@ -6,6 +6,7 @@ import GameQuestion from './game-page/GameQuestion';
 import GameWaitingRoom from './game-page/GameWaitingRoom';
 import GameLeaderboard from './game-page/GameLeaderboard';
 import GameReview from './game-page/GameReview';
+import GameSettings from './game-page/GameSettings';
 
 import DevPanel from './DevPanel';
 
@@ -13,11 +14,10 @@ import {
     setPlayer,
     setAnswers,
 } from './GameFirebase';
+import GamePageHeader from './game-page/GamePageHeader';
 
 
-const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRoomIsOpen, playerAnswers }) => {
-
-    const questionTime = 15;
+const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRoomIsOpen, playerAnswers, kickPlayer }) => {
 
     const pageStates = {
         MAIN_MENU: "MAIN_MENU",
@@ -28,7 +28,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
     };
     const [pageState, setPageState] = useState(pageStates.MAIN_MENU);
     
-    const [timer, setTimer] = useState(questionTime);
+    const [timer, setTimer] = useState(chartData.questionTime);
     
     const [questionIndex, setQuestionIndex] = useState(null);
 
@@ -45,6 +45,10 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
     const [showKickModal, setShowKickModal] = useState(false);
     const handleShowKick = () => setShowKickModal(true);
     const handleCloseKick = () => setShowKickModal(false);
+
+    const [showBadSectionModal, setShowBadSectionModal] = useState(false);
+    const handleShowBadSection = () => setShowBadSectionModal(true);
+    const handleCloseBadSection = () => setShowBadSectionModal(false);
     
     const goToMainMenu = () => {
         setPageState(pageStates.MAIN_MENU);
@@ -55,7 +59,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
             ...localPlayerObj,
             id: Math.floor(Math.random()*Date.now()),
             "name": name,
-            "section": parseInt(section),
+            "section": section,
             "score": 0,
         }
         setLocalPlayerObj({...newPlayerObj});
@@ -64,8 +68,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
     const goToQuestion = React.useCallback(() => {
         setPageState(pageStates.QUESTION);
         setQuestionIndex(adminQuestionIndex);
-        console.log(adminQuestionIndex)
-        setTimer(questionTime);
+        setTimer(questions[adminQuestionIndex].questionTime);
     }, [adminQuestionIndex, pageStates.QUESTION]);
     const goToLeaderboard = React.useCallback(() => {
         setPageState(pageStates.LEADERBOARD);
@@ -85,7 +88,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
 
     const handleAnswerSubmit = async (a,t) => {
         // console.log(localPlayerObj.name, "answer:", a, "time:", t, "score:",chartData.maxScore*t);
-        const score = parseFloat(chartData.maxScore)*parseFloat(t)/parseFloat(questionTime);
+        const score = parseFloat(chartData.maxScore)*parseFloat(t)/parseFloat(chartData.questionTime);
         let was = localPlayerObj.wrongAnswers;
         let newAnswer = false;
         if (was[chartData.id] === undefined) { was[chartData.id] = []; newAnswer = true; }
@@ -94,7 +97,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
             ...localPlayerObj,
             answers: newAnswer?[...(localPlayerObj.answers),a]:[...(localPlayerObj.answers)],
             wrongAnswers: was,
-            times: newAnswer?[...(localPlayerObj.times),questionTime-t]:[...(localPlayerObj.times)],
+            times: newAnswer?[...(localPlayerObj.times),chartData.questionTime-t]:[...(localPlayerObj.times)],
             score: localPlayerObj.score + newAnswer?Math.floor(score):0,
         };
         setLocalPlayerObj({...newPlayerObj});
@@ -104,6 +107,19 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
         newAnswers[localPlayerObj.id] = a;
         setAnswers({...newAnswers});
         console.log(playerAnswers, newAnswers);
+    }
+
+    const wipePlayer = () => {
+        kickPlayer(localPlayerObj);
+        setLocalPlayerObj({
+            id: null,
+            name: null,
+            score: null,
+            section: null,
+            answers: [],
+            wrongAnswers: {},
+            times: [],
+        });
     }
 
     const [topPlayers, setTopPlayers] = useState([]);
@@ -141,55 +157,18 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
         return () => clearInterval(interval);
     }, [timer, goToLeaderboard, pageState, pageStates.QUESTION]);
 
-    return (<>
-
-        {pageState === pageStates.MAIN_MENU ? <>
-        <GameMainMenu
-            onSubmitName={(name, section) => {
-                setLocalPlayerObj({...localPlayerObj, "name":name, "section": section});
-                goToWaitingRoom(name, section);
-            }}
-            canSubmitName={waitingRoomIsOpen}
-            showKickModal={showKickModal}
-            handleCloseKick={handleCloseKick}
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
+    const handleShowSettings = () => setShowSettingsModal(true);
+    const handleCloseSettings = () => setShowSettingsModal(false);
+    const SettingsComponent = (
+        <GameSettings
+            showSettingsModal={showSettingsModal}
+            handleShowSettings={handleShowSettings}
+            handleCloseSettings={handleCloseSettings}
         />
-        </> : <></>}
+    );
 
-        {pageState === pageStates.WAITING_ROOM ? <>
-        <GameWaitingRoom
-            displayName={localPlayerObj.name}
-            playersList={players}
-        />
-        </> : <></>}
-
-        {pageState === pageStates.QUESTION ? <>
-        <GameQuestion
-            displayName={localPlayerObj.name}
-            chartData={chartData}
-            questionTime={questionTime}
-            timer={timer}
-            endQuestion={goToLeaderboard}
-            selectAnswer={handleAnswerSubmit}
-        />
-        </> : <></>}
-
-        {pageState === pageStates.LEADERBOARD ? <>
-        <GameLeaderboard
-            player={localPlayerObj}
-            chartData={chartData}
-            topPlayers={topPlayers}
-        />
-        </> : <></>}
-
-        {pageState === pageStates.REVIEW ? <>
-        <GameReview
-            player={localPlayerObj}
-            chartsData={questions}
-            topPlayers={topPlayers}
-        />
-        </> : <></>}
-
-        <br />
+    const DevComponent = (
         <DevPanel
             goToMainMenu={goToMainMenu}
             goToLeaderboard={goToLeaderboard}
@@ -199,6 +178,87 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
             displayName={localPlayerObj.name==null?"":localPlayerObj.name}
             setDisplayName={(name) => setLocalPlayerObj({...localPlayerObj, "name":name})}
         />
+    );
+    
+    const HeaderComponent = (
+        <GamePageHeader
+            player={localPlayerObj}
+            goToMainMenu={() => {wipePlayer(); goToMainMenu();}}
+        />
+    );
+
+    let PageComponent;
+    let renderHeader = true;
+    switch (pageState) {
+        case pageStates.MAIN_MENU:
+            PageComponent = (
+                <GameMainMenu
+                    onSubmitName={(name, section) => {
+                        setLocalPlayerObj({...localPlayerObj, "name":name, "section": section});
+                        goToWaitingRoom(name, section);
+                    }}
+                    canSubmitName={waitingRoomIsOpen}
+                    showKickModal={showKickModal}
+                    handleCloseKick={handleCloseKick}
+                    settings={SettingsComponent}
+                    showBadSectionModal={showBadSectionModal}
+                    handleCloseBadSection={handleCloseBadSection}
+                    handleShowBadSection={handleShowBadSection}
+                />
+            );
+            renderHeader = false;
+            break;
+        case pageStates.WAITING_ROOM:
+            PageComponent = (
+                <GameWaitingRoom
+                    displayName={localPlayerObj.name}
+                    playersList={players}
+                    settings={SettingsComponent}
+                />
+            );
+            break;
+        case pageStates.QUESTION:
+            PageComponent = (
+                <GameQuestion
+                    displayName={localPlayerObj.name}
+                    chartData={chartData}
+                    questionTime={chartData.questionTime}
+                    timer={timer}
+                    endQuestion={goToLeaderboard}
+                    selectAnswer={handleAnswerSubmit}
+                    settings={SettingsComponent}
+                />
+            );
+            break;
+        case pageStates.LEADERBOARD:
+            PageComponent = (
+                <GameLeaderboard
+                    player={localPlayerObj}
+                    chartData={chartData}
+                    topPlayers={topPlayers}
+                    settings={SettingsComponent}
+                />
+            );
+            break;
+        case pageStates.REVIEW:
+            PageComponent = (
+                <GameReview
+                    player={localPlayerObj}
+                    chartsData={questions}
+                    topPlayers={topPlayers}
+                    settings={SettingsComponent}
+                />
+            );
+            break;
+        default:
+            PageComponent = <></>;
+    }
+
+    return (<>
+
+        {renderHeader ? HeaderComponent : <></>}
+
+        {PageComponent}
     
     </>);
 }
@@ -210,6 +270,7 @@ GamePage.propTypes = {
     adminQuestionIndex: PropTypes.number,
     waitingRoomIsOpen: PropTypes.bool.isRequired,
     playerAnswers: PropTypes.object.isRequired,
+    kickPlayer: PropTypes.func.isRequired,
 };
 
 export default GamePage;

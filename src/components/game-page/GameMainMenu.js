@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
 
 import {
     Navbar,
@@ -17,15 +16,19 @@ import {
 import LinkContainer from 'react-router-bootstrap/lib/LinkContainer';
 
 
-const GameMainMenu = ({ onSubmitName, canSubmitName, showKickModal, handleCloseKick }) => {
-
-    const [showSettingsModal, setShowSettingsModal] = useState(false);
-    const handleShowSettings = () => setShowSettingsModal(true);
-    const handleCloseSettings = () => setShowSettingsModal(false);
+const GameMainMenu = ({ onSubmitName, canSubmitName, showKickModal, handleCloseKick, settings, showBadSectionModal, handleShowBadSection, handleCloseBadSection }) => {
 
     const handleNameSubmit = (e) => {
         e.preventDefault();
-        onSubmitName(e.target[0].value, e.target[1].value);
+
+        let name = e.target[0].value;
+        let section = parseInt(e.target[1].value);
+
+        if (!isNaN(section)) {
+            onSubmitName(name, section);
+        } else {
+            handleShowBadSection();
+        }
     }
 
     return (<>
@@ -47,27 +50,7 @@ const GameMainMenu = ({ onSubmitName, canSubmitName, showKickModal, handleCloseK
             </Navbar.Collapse>
         </Navbar>
 
-        <Button variant="secondary" onClick={handleShowSettings}>Settings</Button>
-        <Modal show={showSettingsModal} onHide={handleCloseSettings} aria-labelledby="contained-modal-title-vcenter" centered>
-            <Modal.Header closeButton>
-            <Modal.Title>Settings</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-            <fieldset>
-                <Form>
-                    <Form.Check type="checkbox" label="Settings Option 1" />
-                    <Form.Check type="checkbox" label="Settings Option 2" />
-                </Form>
-                <Form>
-                    <Form.Check type="radio" label="Settings Option 3" />
-                    <Form.Check type="radio" label="Settings Option 4" />
-                </Form>
-            </fieldset>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={handleCloseSettings}>Close</Button>
-            </Modal.Footer>
-        </Modal>
+        {settings}
 
         <Modal show={showKickModal} onHide={handleCloseKick} aria-labelledby="contained-modal-title-vcenter" centered>
             <Modal.Header closeButton>
@@ -79,10 +62,20 @@ const GameMainMenu = ({ onSubmitName, canSubmitName, showKickModal, handleCloseK
             </Modal.Body>
         </Modal>
 
-        <Container>
+        <Modal show={showBadSectionModal} onHide={handleCloseBadSection} aria-labelledby="contained-modal-title-vcenter" centered>
+            <Modal.Header closeButton>
+                <Modal.Title>Invalid Section</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                The section number you entered is invalid.
+            </Modal.Body>
+        </Modal>
+
+        <Container style={{"height":"60vh", "paddingTop":"20vh"}}>
             <Row className="justify-content-md-center">
                 <Col sm="auto"><h1>Name That Summation</h1></Col>
             </Row>
+            <br />
             <Row className="justify-content-md-center">
                 <Col sm={8}>
                 <Form onSubmit={handleNameSubmit}>
@@ -118,6 +111,12 @@ const GameMainMenu = ({ onSubmitName, canSubmitName, showKickModal, handleCloseK
 GameMainMenu.propTypes = {
     onSubmitName: PropTypes.func.isRequired,
     canSubmitName: PropTypes.bool.isRequired,
+    showKickModal: PropTypes.bool.isRequired,
+    handleCloseKick: PropTypes.func.isRequired,
+    settings: PropTypes.object.isRequired,
+    showBadSectionModal: PropTypes.bool.isRequired,
+    handleCloseBadSection: PropTypes.func.isRequired,
+    handleShowBadSection: PropTypes.func.isRequired,
 };
 
 export default GameMainMenu;

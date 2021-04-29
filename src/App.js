@@ -20,6 +20,7 @@ import {
     deletePlayers,
     setFirebaseGameState,
     deleteQuestions,
+    kickPlayer,
 } from './components/AdminFirebase';
 
 import './App.css';
@@ -51,7 +52,7 @@ function App() {
         db.collection("questions").onSnapshot((snapshot) => {
             console.log(snapshot.docs);
             setQuestions(snapshot.docs.map((doc) => {
-                let { xEnd, xStart, xInc, evalChoices, renderChoices, answerIndex, maxScore } = doc.data();
+                let { xEnd, xStart, xInc, evalChoices, renderChoices, answerIndex, maxScore, questionTime } = doc.data();
                 return {
                     "id": doc.id,
                     "color": "hsl(24, 70%, 50%)",
@@ -65,6 +66,7 @@ function App() {
                     "xEnd": xEnd,
                     "xStart": xStart,
                     "xInc": xInc,
+                    "questionTime": questionTime,
                 };
             }).sort((a,b) => parseInt(a.id.substring(1))>parseInt(b.id.substring(1))?1:-1));
 
@@ -143,11 +145,13 @@ function App() {
                         "renderChoices": [],
                         "answerIndex": null,
                         "maxScore": null,
+                        "questionTime": 0,
                     }}
                     players={players}
                     adminQuestionIndex={adminGameState.questionIndex}
                     waitingRoomIsOpen={adminGameState.pageState === adminPageStates.WAITING}
                     playerAnswers={playerAnswers}
+                    kickPlayer={kickPlayer}
                 />
             </Route>
             <Route path="/admin-page">
@@ -163,10 +167,10 @@ function App() {
             </Route>
         </Switch>
         
-        <br /><br />
+        {/* <br /><br />
         <LinkContainer to="/">
             <Button>HOME</Button>
-        </LinkContainer>
+        </LinkContainer> */}
     </Router>
     );
 }

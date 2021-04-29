@@ -136,18 +136,9 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGa
                         <ListGroup.Item
                             href={`${index}`}
                             key={`${index}`}
-                            style={{cursor: "pointer", paddingLeft: "0", paddingRight: "0"}}
+                            style={{cursor: "pointer"}}
                             variant={index===localGameState.questionIndex?"primary":(index<localGameState.questionIndex?"secondary":"")}>
-                                <Container>
-                                <Row>
-                                    {/* <Col xs={3} style={{margin: "auto"}}>
-                                        <Button variant="danger" size="sm">✖</Button>
-                                    </Col> */}
-                                    <Col>
-                                        {q.id}
-                                    </Col>
-                                </Row>
-                                </Container>
+                                {q.id}
                         </ListGroup.Item>
                     )}
                     </ListGroup>

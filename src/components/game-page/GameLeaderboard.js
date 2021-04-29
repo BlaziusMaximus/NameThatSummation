@@ -14,14 +14,19 @@ import { MathComponent } from 'mathjax-react';
 import GameChart from '../GameChart';
 
 
-const GameLeaderboard = ({ player, chartData, topPlayers }) => {
+const GameLeaderboard = ({ player, chartData, topPlayers, settings }) => {
 
     const localPlayer = topPlayers.find(p => p.id===player.id)===undefined ? player : null;
 
     return (<>
 
-        <h2>Name: {player.name}</h2>
-        <h3>Score: {player.score}</h3>
+        {settings}
+        
+        <span>
+            <h2>Name: {player.name}</h2>
+            <h3>Score: {player.score}</h3>
+        </span>
+
         <br />
 
         <Container fluid>
@@ -89,6 +94,7 @@ GameLeaderboard.propTypes = {
     player: PropTypes.object.isRequired,
     chartData: PropTypes.object.isRequired,
     topPlayers: PropTypes.array.isRequired,
+    settings: PropTypes.object.isRequired,
 }
 
 export default GameLeaderboard;
