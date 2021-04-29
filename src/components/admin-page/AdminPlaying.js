@@ -21,7 +21,7 @@ import { MathComponent } from 'mathjax-react';
 
 
 const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGameState, playersList, playerAnswers }) => {
-    console.log("I am hear");
+    
     const [tab, setTab] = useState("players");
 
     const [answerStats, setAnswerStats] = useState([0,0,0,0]);
@@ -32,8 +32,8 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGa
                 newStats[playerAnswers[player.id]] += 1;
                 console.log(player.id, playerAnswers[player.id]);
             }
+            console.log(player);
         });
-        console.log(newStats);
         setAnswerStats(newStats);
     }, [playerAnswers, playersList]);
 
@@ -112,6 +112,7 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGa
                                 <th>Section</th>
                                 <th>Score</th>
                                 <th>Time</th>
+                                <th>Answer</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -120,7 +121,8 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGa
                                 <td>{player.name}</td>
                                 <td>{player.section}</td>
                                 <td>{player.score}</td>
-                                <td>{player.times[localGameState.questionIndex]}</td>
+                                <td>{player.times[`q${localGameState.questionIndex}`]}</td>
+                                <td>{player.answers[`q${localGameState.questionIndex}`]}</td>
                             </tr>
                         )}
                         </tbody>

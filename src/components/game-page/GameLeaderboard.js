@@ -33,7 +33,7 @@ const GameLeaderboard = ({ player, chartData, topPlayers, settings }) => {
             <Row>
                 <Col xs={8}>
                 <Card style={{height:"80vh"}} className="text-center">
-                    <Card.Header as="h5">Time Spent on Question: {player.times[player.times.length-1]}s</Card.Header>
+                    <Card.Header as="h5">Time Spent on Question: {player.times[chartData.id]}s</Card.Header>
                     <Card.Body>
                         <GameChart data={[chartData]} />
                     </Card.Body>

@@ -27,6 +27,7 @@ import './App.css';
 
 function App() {
 
+    // enum object of states from the admin perspective
     const adminPageStates = {
         OFFLINE: "OFFLINE",
         WAITING: "WAITING",
@@ -34,10 +35,11 @@ function App() {
         REVIEW: "REVIEW",
     };
 
+    // players array updated on firebase snapshot
     const [players, setPlayers] = useState([]);
     React.useEffect(() => {
         db.collection("playersDB").onSnapshot((snapshot) => {
-            console.log(snapshot.docs);
+            // console.log(snapshot.docs);
             if (snapshot.docs.length > 0) {
                 setPlayers(snapshot.docs.map(doc => doc.data()));
             } else {
@@ -47,11 +49,13 @@ function App() {
         console.log("fetched players from firebase")
     }, []);
 
+    // questions array updated on firebase snapshot
     const [questions, setQuestions] = useState([]);
     React.useEffect(() => {
         db.collection("questions").onSnapshot((snapshot) => {
-            console.log(snapshot.docs);
+            // console.log(snapshot.docs);
             setQuestions(snapshot.docs.map((doc) => {
+                // convert firebase questions document object to local questions object
                 let { xEnd, xStart, xInc, evalChoices, renderChoices, answerIndex, maxScore, questionTime } = doc.data();
                 return {
                     "id": doc.id,
@@ -68,19 +72,21 @@ function App() {
                     "xInc": xInc,
                     "questionTime": questionTime,
                 };
-            }).sort((a,b) => parseInt(a.id.substring(1))>parseInt(b.id.substring(1))?1:-1));
+            }).sort((a,b) => parseInt(a.id.substring(1))>parseInt(b.id.substring(1))?1:-1)); // ensure questions are in numeric order
 
         });
         console.log("fetched questions from firebase")
     }, []);
 
+    // local game state according to admin
     const [adminGameState, setAdminGameState] = useState({
         pageState: adminPageStates.OFFLINE,
         questionIndex: null,
     });
+    // update local admin game state on firebase snapshot
     React.useEffect(() => {
         db.collection("adminVars").doc("GameState").onSnapshot((doc) => {
-            console.log(doc.data());
+            // console.log(doc.data());
             if (doc.data() !== undefined) {
                 setAdminGameState(doc.data());
             }
@@ -92,10 +98,11 @@ function App() {
         console.log("fetched adminVars.GameState from firebase")
     }, []);
 
+    // update player answers object on firebase snapshot
     const [playerAnswers, setPlayerAnswers] = useState({});
     React.useEffect(() => {
         db.collection("adminVars").doc("PlayerAnswers").onSnapshot((doc) => {
-            console.log(doc.data());
+            // console.log(doc.data());
             if (doc.data() !== undefined) {
                 setPlayerAnswers(doc.data());
             }
@@ -103,9 +110,11 @@ function App() {
         console.log("fetched adminVars.PlayerAnswers from firebase");
     }, []);
 
+    // rendered components
     return (
     <Router basename="/NameThatSummation">
         <Switch>
+            {/* root level url */}
             <Route exact path="/">
                 <nav>
                     <LinkContainer to="/team-page">
