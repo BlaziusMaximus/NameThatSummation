@@ -17,7 +17,7 @@ import {
 import GamePageHeader from './game-page/GamePageHeader';
 
 
-const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRoomIsOpen, playerAnswers, kickPlayer }) => {
+const GamePage = ({ questions, chartData, players, adminQuestionIndex, questionActive, waitingRoomIsOpen, playerAnswers, kickPlayer }) => {
 
     // enum object of game webpage states relevant to the player
     const pageStates = {
@@ -72,7 +72,6 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
         setPageState(pageStates.QUESTION);
         setQuestionIndex(adminQuestionIndex);
         setTimer(questions[adminQuestionIndex].questionTime);
-        setAnswers({});
     }, [adminQuestionIndex, pageStates.QUESTION]);
     const goToLeaderboard = React.useCallback(() => {
         setPageState(pageStates.LEADERBOARD);
@@ -115,7 +114,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
         setPlayer({...newPlayerObj});
 
         let newAnswers = playerAnswers;
-        newAnswers[localPlayerObj.id] = a;
+        newAnswers[chartData.id][localPlayerObj.id] = a;
         setAnswers({...newAnswers});
         // console.log(playerAnswers, newAnswers);
     }
@@ -153,7 +152,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
     // timing logic
     React.useEffect(() => {
         const interval = setInterval(() => {
-            if (pageState === pageStates.QUESTION) {
+            if (pageState === pageStates.QUESTION && localPlayerObj.answers[chartData.id] !== chartData.answerIndex) {
                 if (timer > 0) {
                     let tim = {...localPlayerObj.times};
                     tim[chartData.id] = chartData.questionTime-(timer-1);
@@ -161,7 +160,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
                         ...localPlayerObj,
                         times: tim,
                     };
-                    console.log(newPlayerObj)
+                    // console.log(newPlayerObj)
                     setLocalPlayerObj({...newPlayerObj});
                     setPlayer({...newPlayerObj});
                     setTimer(timer-1);
@@ -175,7 +174,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
                         answers: ans,
                         times: tim,
                     };
-                    console.log({...newPlayerObj})
+                    // console.log({...newPlayerObj})
                     setLocalPlayerObj({...newPlayerObj});
                     setPlayer({...newPlayerObj});
                     goToLeaderboard();
@@ -183,7 +182,13 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, waitingRo
             }
         }, 1000);
         return () => clearInterval(interval);
-    }, [timer, goToLeaderboard, pageState, pageStates.QUESTION]);
+    }, [timer, goToLeaderboard, pageState, pageStates.QUESTION, localPlayerObj]);
+
+    React.useEffect(() => {
+        if (pageState === pageStates.QUESTION && questionActive === false) {
+            goToLeaderboard();
+        }
+    }, [questionActive]);
 
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const handleShowSettings = () => setShowSettingsModal(true);
@@ -296,6 +301,7 @@ GamePage.propTypes = {
     chartData: PropTypes.object.isRequired,
     players: PropTypes.array.isRequired,
     adminQuestionIndex: PropTypes.number,
+    questionActive: PropTypes.bool,
     waitingRoomIsOpen: PropTypes.bool.isRequired,
     playerAnswers: PropTypes.object.isRequired,
     kickPlayer: PropTypes.func.isRequired,

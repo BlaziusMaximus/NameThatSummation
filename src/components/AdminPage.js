@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 
 import AdminWaiting from './admin-page/AdminWaiting';
@@ -12,7 +12,7 @@ import {
     setFirebaseGameState,
     uploadQuestions,
     deleteQuestions,
-    clearAnswers,
+    setAnswers,
 } from './AdminFirebase';
 
 
@@ -22,6 +22,7 @@ const AdminPage = ({ pageStates, pageState, playersList, localGameState, setLoca
         let newGameState = {
             pageState: pageStates.WAITING,
             questionIndex: null,
+            questionActive: false,
         };
         setLocalGameState(newGameState);
         setFirebaseGameState(newGameState);
@@ -30,21 +31,23 @@ const AdminPage = ({ pageStates, pageState, playersList, localGameState, setLoca
         let newGameState = {
             pageState: pageStates.OFFLINE,
             questionIndex: null,
+            questionActive: false,
         };
         setLocalGameState(newGameState);
         setFirebaseGameState(newGameState);
 
         deletePlayers(playersList);
         deleteQuestions(questions);
+        setAnswers({});
     }
     const startGame = () => {
         let newGameState = {
             pageState: pageStates.PLAYING,
             questionIndex: 0,
+            questionActive: true,
         };
         setLocalGameState(newGameState);
         setFirebaseGameState(newGameState);
-        console.log(newGameState)
     }
     const prevQuestion = () => {
         let qIndex = localGameState.questionIndex - 1;
@@ -52,10 +55,10 @@ const AdminPage = ({ pageStates, pageState, playersList, localGameState, setLoca
             let newGameState = {
                 pageState: pageStates.PLAYING,
                 questionIndex: qIndex,
+                questionActive: true,
             };
             setLocalGameState(newGameState);
             setFirebaseGameState(newGameState);
-            clearAnswers();
         }
     }
     const nextQuestion = () => {
@@ -65,16 +68,26 @@ const AdminPage = ({ pageStates, pageState, playersList, localGameState, setLoca
             newGameState = {
                 pageState: pageStates.PLAYING,
                 questionIndex: qIndex,
+                questionActive: true,
             };
         } else {
             newGameState = {
                 pageState: pageStates.REVIEW,
                 questionIndex: null,
+                questionActive: false,
             };
         }
         setLocalGameState(newGameState);
         setFirebaseGameState(newGameState);
-        clearAnswers();
+    }
+    const endQuestion = () => {
+        let newGameState = {
+            pageState: pageStates.PLAYING,
+            questionIndex: localGameState.questionIndex,
+            questionActive: false,
+        }
+        setLocalGameState(newGameState);
+        setFirebaseGameState(newGameState);
     }
 
     return (<>
@@ -103,10 +116,11 @@ const AdminPage = ({ pageStates, pageState, playersList, localGameState, setLoca
                 quitGame={clearGame}
                 prevQuestion={prevQuestion}
                 nextQuestion={nextQuestion}
+                endQuestion={endQuestion}
                 questions={questions}
                 localGameState={localGameState}
                 playersList={playersList}
-                playerAnswers={playerAnswers}
+                playerAnswers={playerAnswers[`q${localGameState.questionIndex}`]}
             />
         </> : <></>}
         
@@ -115,6 +129,7 @@ const AdminPage = ({ pageStates, pageState, playersList, localGameState, setLoca
                 chartsData={questions}
                 playersList={playersList}
                 endGame={clearGame}
+                playerAnswers={playerAnswers}
             />
         </> : <></>}
         

@@ -22,6 +22,7 @@ const GameQuestion = ({ displayName, chartData, questionTime, timer, endQuestion
             endQuestion(answerTime);
         }
     }
+    // setShowFeedbackModal(false);
 
     const [answerChoiceIndex, setAnswerChoiceIndex] = useState(null);
     const [answersClicked, setAnswersClicked] = useState(new Array(chartData.renderChoices.length).fill(0));
@@ -46,10 +47,10 @@ const GameQuestion = ({ displayName, chartData, questionTime, timer, endQuestion
         let x = parseFloat(questionTime-timer)/parseFloat(questionTime);
         let l = chartData.data.length;
         let sliceI = Math.floor(x*(l-1))+1;//Math.floor(x**2 * (l-2))+2;
-        console.log(sliceI)
         cd.data = cd.data.slice(0, Math.min(l, sliceI));
+        console.log(cd.data)
         setChartDataSlice(cd);
-    }, [timer, questionTime, chartData, endQuestion]);
+    }, [timer, questionTime, chartData]);
 
     const pointEval = (e) => {
         let y = evaluatex(chartData.evalChoices[answerChoiceIndex])({x:e});

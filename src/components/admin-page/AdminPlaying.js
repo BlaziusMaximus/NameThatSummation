@@ -20,7 +20,7 @@ import GameChart from '../GameChart';
 import { MathComponent } from 'mathjax-react';
 
 
-const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGameState, playersList, playerAnswers }) => {
+const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, endQuestion, questions, localGameState, playersList, playerAnswers }) => {
     
     const [tab, setTab] = useState("players");
 
@@ -28,11 +28,9 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGa
     React.useEffect(() => {
         let newStats = [0,0,0,0];
         playersList.forEach(player => {
-            if (playerAnswers[player.id] !== undefined) {
+            if (playerAnswers !== undefined && playerAnswers[player.id] !== undefined) {
                 newStats[playerAnswers[player.id]] += 1;
-                console.log(player.id, playerAnswers[player.id]);
             }
-            console.log(player);
         });
         setAnswerStats(newStats);
     }, [playerAnswers, playersList]);
@@ -50,6 +48,15 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGa
                 block
                 disabled={localGameState.questionIndex === 0}>
                     Previous Question
+            </Button>
+            <Button
+                className="btn-block mr-1 mt-1 btn-lg"
+                onClick={endQuestion}
+                id="end"
+                variant="warning"
+                size="lg"
+                block>
+                    End Question
             </Button>
             <Button
                 className="btn-block mr-1 mt-1 btn-lg"
@@ -121,8 +128,15 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, questions, localGa
                                 <td>{player.name}</td>
                                 <td>{player.section}</td>
                                 <td>{player.score}</td>
-                                <td>{player.times[`q${localGameState.questionIndex}`]}</td>
-                                <td>{player.answers[`q${localGameState.questionIndex}`]}</td>
+                                <td>{player.times[`q${localGameState.questionIndex}`]==null?0:player.times[`q${localGameState.questionIndex}`]}</td>
+                                <td>
+                                {player.answers['q'+localGameState.questionIndex.toString()] != null ?
+                                    <MathComponent
+                                        tex={`y = ${questions[localGameState.questionIndex].renderChoices[player.answers['q'+localGameState.questionIndex.toString()]]}`}
+                                        display={false}
+                                    />
+                                :   "NONE"}
+                                </td>
                             </tr>
                         )}
                         </tbody>
@@ -184,6 +198,7 @@ AdminPlaying.propTypes = {
     quitGame: PropTypes.func.isRequired,
     prevQuestion: PropTypes.func.isRequired,
     nextQuestion: PropTypes.func.isRequired,
+    endQuestion: PropTypes.func.isRequired,
     questions: PropTypes.array.isRequired,
     localGameState: PropTypes.object.isRequired,
     playersList: PropTypes.array.isRequired,

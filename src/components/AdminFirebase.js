@@ -19,9 +19,12 @@ const setFirebaseGameState = (state) => {
 }
 
 const uploadQuestions = (json) => {
+    let blankAnswers = {};
     for (let i = 0; i < json.length; i++) {
         db.collection('questions').doc('q'+i).set({...json[i]});
+        blankAnswers['q'+i] = {};
     }
+    db.collection('adminVars').doc('PlayerAnswers').set(blankAnswers);
 }
 
 const deleteQuestions = (questions) => {
@@ -31,8 +34,8 @@ const deleteQuestions = (questions) => {
     })
 }
 
-const clearAnswers = () => {
-    db.collection('adminVars').doc('PlayerAnswers').set({});
+const setAnswers = (ans) => {
+    db.collection('adminVars').doc('PlayerAnswers').set(ans);
 }
 
 export {
@@ -41,5 +44,5 @@ export {
     setFirebaseGameState,
     uploadQuestions,
     deleteQuestions,
-    clearAnswers,
+    setAnswers,
 };

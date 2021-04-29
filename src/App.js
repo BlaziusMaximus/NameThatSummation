@@ -82,6 +82,7 @@ function App() {
     const [adminGameState, setAdminGameState] = useState({
         pageState: adminPageStates.OFFLINE,
         questionIndex: null,
+        questionActive: false,
     });
     // update local admin game state on firebase snapshot
     React.useEffect(() => {
@@ -158,6 +159,7 @@ function App() {
                     }}
                     players={players}
                     adminQuestionIndex={adminGameState.questionIndex}
+                    questionActive={adminGameState.questionActive}
                     waitingRoomIsOpen={adminGameState.pageState === adminPageStates.WAITING}
                     playerAnswers={playerAnswers}
                     kickPlayer={kickPlayer}

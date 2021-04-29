@@ -11,17 +11,16 @@ import {
     Tab,
     ListGroup,
     Table,
+    ProgressBar,
 } from 'react-bootstrap';
 
 import { MathComponent } from 'mathjax-react';
 
 
-const AdminReview = ({ chartsData, playersList, endGame }) => {
+const AdminReview = ({ chartsData, playersList, endGame, playerAnswers }) => {
 
     let rankedPlayers = playersList.sort((a,b) => (a.name > b.name) ? 1 : -1);
-    console.log(rankedPlayers)
     let topPlayers = rankedPlayers.length >= 5 ? rankedPlayers.slice(0,5) : rankedPlayers;
-    // let localPlayer = null; // rankedPlayers.find(p => p.id == thisPlayer.id) == undefined ? null : thisPlayer;
 
     return (<>
 
@@ -56,6 +55,24 @@ const AdminReview = ({ chartsData, playersList, endGame }) => {
                             </Button>
                             ))}
                         </Card.Footer>
+                        <br />
+                        <Container>
+                        {chart.renderChoices.map((e,index) => (<>
+                        <Row>
+                            <Col sm={3}>
+                                <MathComponent tex={`y = ${e}`} display={false} />
+                            </Col>
+                            <Col>
+                                <ProgressBar
+                                    label={`${Object.values(playerAnswers[chart.id]).filter(x => x===index).length/playersList.length*100}%`}
+                                    variant={chart.answerIndex===index?"success":"primary"}
+                                    now={Object.values(playerAnswers[chart.id]).filter(x => x===index).length/playersList.length*100}
+                                />
+                            </Col>
+                        </Row>
+                        </>))}
+                        </Container>
+                        <br />
                     </Card>
                     </Tab.Pane>
                     ))}
@@ -93,6 +110,7 @@ AdminReview.propTypes = {
     chartsData: PropTypes.array.isRequired,
     playersList: PropTypes.array.isRequired,
     endGame: PropTypes.func.isRequired,
+    playerAnswers: PropTypes.object.isRequired,
 }
 
 export default AdminReview;
