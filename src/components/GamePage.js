@@ -92,7 +92,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, questionA
 
     const handleAnswerSubmit = async (a,t) => {
         // console.log(localPlayerObj.name, "answer:", a, "time:", t, "score:",chartData.maxScore*t);
-        const points = parseFloat(chartData.maxScore)*parseFloat(t)/parseFloat(chartData.questionTime);
+        const points = parseFloat(chartData.maxScore)*parseFloat(chartData.questionTime-t)/parseFloat(chartData.questionTime);
         // update answer at question id to latest submission
         let localAnswers = {...localPlayerObj.answers};
         localAnswers[chartData.id] = a;
@@ -105,16 +105,16 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, questionA
         if (!rightAnswer) { localWrongs[chartData.id].push(a); }
         // update submission time at question id
         let localTimes = {...localPlayerObj.times};
-        localTimes[chartData.id] = chartData.questionTime-t;
+        localTimes[chartData.id] = t;
         // update player object for local and firebase storage
         const newPlayerObj = {
             ...localPlayerObj,
             answers: localAnswers,
             wrongAnswers: localWrongs,
             times: localTimes,
-            score: localPlayerObj.score + firstAnswer&&rightAnswer?Math.floor(points):0,
+            score: localPlayerObj.score + (firstAnswer&&rightAnswer?Math.floor(points):0),
         };
-        // console.log({...newPlayerObj})
+        console.log(localPlayerObj.score, firstAnswer&&rightAnswer?Math.floor(points):0)
         setLocalPlayerObj({...newPlayerObj}); // local
         setPlayer({...newPlayerObj});         // firebase
         // update PlayerAnswers AdminVar for progress bars

@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
-
-import GameChart from '../GameChart';
+import React, {useState} from 'react';
 
 import {
     Container,
@@ -15,10 +14,22 @@ import {
 
 import { MathComponent } from 'mathjax-react';
 
+import GameAnswerSelections from './game-components/GameAnswerSelections';
+import GameChart from '../GameChart';
+import {
+    pointEval,
+} from '../GameUtils';
+
 
 const GameReview = ({ player, chartsData, topPlayers }) => {
 
     const localPlayer = topPlayers.find(p => p.id===player.id)===undefined ? player : null;
+
+    const [wrongChartIndex, setWrongChartIndex] = useState(null);
+    const toggleWrongChart = (a) => {
+        if (wrongChartIndex === a) { setWrongChartIndex(null); }
+        else { setWrongChartIndex(a); }
+    }
 
     return (<>
 
@@ -44,7 +55,17 @@ const GameReview = ({ player, chartsData, topPlayers }) => {
                     <Card style={{height:"65vh"}} className="text-center">
                         <Card.Header as="h5">Time Spent on Question: {player.times[`q${index}`]}s</Card.Header>
                         <Card.Body>
+                        {wrongChartIndex===null ?
                             <GameChart data={[chart]} />
+                        :
+                            <GameChart
+                                data={[chart, 
+                                    { "id": "wrongData", "data": [...Array(Math.floor((chart.xEnd-chart.xStart)/parseFloat(chart.xInc))+1).keys()].map(e => (
+                                        { "x":String(e), "y":pointEval(chart.evalChoices[wrongChartIndex], e) }
+                                    ))}
+                                ]}
+                            />
+                        }
                         </Card.Body>
                         <Card.Footer>
                             {chart.renderChoices.map((e, expindex) => (
@@ -55,24 +76,11 @@ const GameReview = ({ player, chartsData, topPlayers }) => {
                         </Card.Footer>
                     </Card>
                     <br />
-                    <h3>Answer Selections:</h3>
-                    <ListGroup horizontal>
-                    {player.wrongAnswers[chart.id]!==undefined ? player.wrongAnswers[chart.id].map((ans) => (
-                        <ListGroup.Item key={ans+"wrong"} variant="danger" action>
-                            <MathComponent tex={`y = ${chart.renderChoices[ans]}`} display={false} />
-                        </ListGroup.Item>
-                    )) : <></>}
-                    {player.answers[chart.id]===chart.answerIndex ? (
-                        <ListGroup.Item key={chart.answerIndex+"right"} variant="success">
-                            <MathComponent tex={`y = ${chart.renderChoices[chart.answerIndex]}`} display={false} />
-                        </ListGroup.Item>
-                    ) : <></>}
-                    {player.wrongAnswers[chart.id]===undefined && player.answers[chart.id]!==chart.answerIndex ? (
-                        <ListGroup.Item key={chart.id+"none"} variant="warning">
-                            NONE
-                        </ListGroup.Item>
-                    ) : <></>}
-                    </ListGroup>
+                    <GameAnswerSelections
+                        player={player}
+                        chartData={chart}
+                        showWrongChart={toggleWrongChart}
+                    />
                     </Tab.Pane>
                     ))}
                 </Tab.Content>

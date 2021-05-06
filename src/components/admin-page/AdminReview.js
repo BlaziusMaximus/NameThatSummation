@@ -35,7 +35,7 @@ const AdminReview = ({ chartsData, playersList, endGame, playerAnswers }) => {
                 <Col sm={4}>
                     <ListGroup>
                         {chartsData.map((chart,index) => (
-                        <ListGroup.Item href={chart.id} key={chart.id}>
+                        <ListGroup.Item href={chart.id} key={chart.id} style={{cursor: "pointer"}}>
                             Question {index}: {chart.id}
                         </ListGroup.Item>
                         ))}
@@ -52,7 +52,7 @@ const AdminReview = ({ chartsData, playersList, endGame, playerAnswers }) => {
                         <Card.Footer>
                             {chart.renderChoices.map((e, expindex) => (
                             <Button disabled id={e} key={e} variant={chart.answerIndex===expindex?"success":"primary"} style={{margin: "0 2%"}}>
-                                <MathComponent tex={`y = ${e}`} style={{pointerEvents:"none;"}} />
+                                <MathComponent tex={`y = ${e}`} style={{pointerEvents:"none;"}} display={false} />
                             </Button>
                             ))}
                         </Card.Footer>
