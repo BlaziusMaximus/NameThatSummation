@@ -23,6 +23,10 @@ import {
     kickPlayer,
 } from './components/AdminFirebase';
 
+import {
+    pointEval,
+} from './components/GameUtils';
+
 import './App.css';
 
 function App() {
@@ -61,7 +65,7 @@ function App() {
                     "id": doc.id,
                     "color": "hsl(24, 70%, 50%)",
                     "data": [...Array(Math.floor((xEnd-xStart)/parseFloat(xInc))+1).keys()].map(e => (
-                        { "x":String(e), "y":evaluatex(evalChoices[answerIndex])({x:e}) }
+                        { "x":String(e), "y":pointEval(evalChoices[answerIndex], e) }
                     )),
                     "renderChoices": renderChoices,
                     "answerIndex": answerIndex,
@@ -163,6 +167,7 @@ function App() {
                     waitingRoomIsOpen={adminGameState.pageState === adminPageStates.WAITING}
                     playerAnswers={playerAnswers}
                     kickPlayer={kickPlayer}
+                    pointEval={pointEval}
                 />
             </Route>
             <Route path="/admin-page">

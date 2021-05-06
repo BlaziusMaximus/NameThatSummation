@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import React, {useState} from 'react';
 
 import {
     Container,
@@ -11,31 +12,43 @@ import {
 
 import { MathComponent } from 'mathjax-react';
 
+import GameAnswerSelections from './game-components/GameAnswerSelections';
 import GameChart from '../GameChart';
+import {
+    pointEval,
+} from '../GameUtils';
 
 
-const GameLeaderboard = ({ player, chartData, topPlayers, settings }) => {
+const GameLeaderboard = ({ player, chartData, topPlayers }) => {
 
     const localPlayer = topPlayers.find(p => p.id===player.id)===undefined ? player : null;
 
+    const [wrongChartIndex, setWrongChartIndex] = useState(null);
+    const toggleWrongChart = (a) => {
+        if (wrongChartIndex === a) { setWrongChartIndex(null); }
+        else { setWrongChartIndex(a); }
+    }
+
     return (<>
 
-        {settings}
-        
-        <span>
-            <h2>Name: {player.name}</h2>
-            <h3>Score: {player.score}</h3>
-        </span>
-
-        <br />
-
         <Container fluid>
+            <br />
             <Row>
-                <Col xs={8}>
-                <Card style={{height:"80vh"}} className="text-center">
+                <Col xs={7}>
+                <Card style={{height:"70vh"}} className="text-center">
                     <Card.Header as="h5">Time Spent on Question: {player.times[chartData.id]}s</Card.Header>
                     <Card.Body>
+                    {wrongChartIndex===null ?
                         <GameChart data={[chartData]} />
+                    :
+                        <GameChart
+                            data={[chartData, 
+                                { "id": "wrongData", "data": [...Array(Math.floor((chartData.xEnd-chartData.xStart)/parseFloat(chartData.xInc))+1).keys()].map(e => (
+                                    { "x":String(e), "y":pointEval(chartData.evalChoices[wrongChartIndex], e) }
+                                ))}
+                            ]}
+                        />
+                    }
                     </Card.Body>
                     <Card.Footer>
                         {chartData.renderChoices.map((e,index) => (
@@ -50,6 +63,11 @@ const GameLeaderboard = ({ player, chartData, topPlayers, settings }) => {
                         ))}
                     </Card.Footer>
                 </Card>
+                <GameAnswerSelections
+                    player={player}
+                    chartData={chartData}
+                    showWrongChart={toggleWrongChart}
+                />
                 </Col>
                 <Col>
                     <h1>LEADERBOARD</h1>

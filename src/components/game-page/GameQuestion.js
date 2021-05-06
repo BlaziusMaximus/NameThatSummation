@@ -10,6 +10,9 @@ import evaluatex from "evaluatex";
 import { MathComponent } from 'mathjax-react';
 
 import GameChart from '../GameChart';
+import {
+    pointEval,
+} from '../GameUtils';
 
 
 const GameQuestion = ({ displayName, chartData, questionTime, timer, endQuestion, selectAnswer }) => {
@@ -52,19 +55,9 @@ const GameQuestion = ({ displayName, chartData, questionTime, timer, endQuestion
         setChartDataSlice(cd);
     }, [timer, questionTime, chartData]);
 
-    const pointEval = (e) => {
-        let y = evaluatex(chartData.evalChoices[answerChoiceIndex])({x:e});
-        if (y === Infinity || y === -Infinity) {
-            return null;
-        }
-        return y;
-    }
-
     return (<>
 
-        <h2>Name: {displayName}</h2>
-
-        <Card style={{height:"80vh"}} className="text-center">
+        <Card style={{height:"90vh"}} className="text-center">
             <Card.Header as="h5">Time Remaining: {timer}</Card.Header>
             <Card.Body>
                 <GameChart data={[chartDataSlice]} />
@@ -100,7 +93,7 @@ const GameQuestion = ({ displayName, chartData, questionTime, timer, endQuestion
                         data={answerChoiceIndex==null?[chartDataSlice]:[
                             chartDataSlice, 
                             { "id": "wrongData", "data": [...Array(Math.floor((chartData.xEnd-chartData.xStart)/parseFloat(chartData.xInc))+1).keys()].map(e => (
-                                { "x":String(e), "y":pointEval(e) }
+                                { "x":String(e), "y":pointEval(chartData.evalChoices[answerChoiceIndex], e) }
                             )).slice(0,chartDataSlice.data.length)}
                         ]}
                     />

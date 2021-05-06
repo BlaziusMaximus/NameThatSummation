@@ -34,6 +34,9 @@ const GameMainMenu = ({ onSubmitName, canSubmitName, showKickModal, handleCloseK
     return (<>
 
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+            <Navbar.Brand>
+                {settings}
+            </Navbar.Brand>
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto" />
@@ -49,8 +52,6 @@ const GameMainMenu = ({ onSubmitName, canSubmitName, showKickModal, handleCloseK
             </Nav>
             </Navbar.Collapse>
         </Navbar>
-
-        {settings}
 
         <Modal show={showKickModal} onHide={handleCloseKick} aria-labelledby="contained-modal-title-vcenter" centered>
             <Modal.Header closeButton>

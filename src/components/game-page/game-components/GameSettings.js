@@ -11,7 +11,7 @@ const GameSettings = ({ showSettingsModal, handleShowSettings, handleCloseSettin
 
     return (<>
 
-        <Button variant="secondary" onClick={handleShowSettings} style={{"margin":"2vh"}}><i className="bi bi-gear"></i></Button>
+        <Button variant="secondary" onClick={handleShowSettings}><i className="bi bi-gear"></i></Button>
 
         <Modal show={showSettingsModal} onHide={handleCloseSettings} aria-labelledby="contained-modal-title-vcenter" centered>
             <Modal.Header closeButton>

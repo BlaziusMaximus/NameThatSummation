@@ -9,7 +9,7 @@ import {
 } from 'react-bootstrap';
 
 
-const GamePageHeader = ({ player, goToMainMenu }) => {
+const GamePageHeader = ({ player, goToMainMenu, settings }) => {
 
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const handleShowConfirm = () => setShowConfirmModal(true);
@@ -18,6 +18,9 @@ const GamePageHeader = ({ player, goToMainMenu }) => {
     return (<>
 
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+            <Navbar.Brand style={{paddingRight: "2vw"}}>
+                {settings}
+            </Navbar.Brand>
             <Navbar.Brand style={{paddingRight: "2vw"}}>
                 <strong>Name</strong>: {player.name}
             </Navbar.Brand>
@@ -54,6 +57,7 @@ const GamePageHeader = ({ player, goToMainMenu }) => {
 GamePageHeader.propTypes = {
     player: PropTypes.object.isRequired,
     goToMainMenu: PropTypes.func.isRequired,
+    settings: PropTypes.object.isRequired,
 };
 
 export default GamePageHeader;

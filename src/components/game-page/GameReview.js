@@ -23,6 +23,7 @@ const GameReview = ({ player, chartsData, topPlayers }) => {
     return (<>
 
         <Container fluid>
+        <br />
         <Row>
             <Col xs={8}>
             <Tab.Container id="list-group-tabs-example" defaultActiveKey={chartsData[0].id}>
@@ -40,7 +41,7 @@ const GameReview = ({ player, chartsData, topPlayers }) => {
                 <Tab.Content>
                     {chartsData.map((chart,index) => (
                     <Tab.Pane eventKey={chart.id} key={chart.id}>
-                    <Card style={{height:"60vh"}} className="text-center">
+                    <Card style={{height:"65vh"}} className="text-center">
                         <Card.Header as="h5">Time Spent on Question: {player.times[`q${index}`]}s</Card.Header>
                         <Card.Body>
                             <GameChart data={[chart]} />
@@ -53,13 +54,24 @@ const GameReview = ({ player, chartsData, topPlayers }) => {
                             ))}
                         </Card.Footer>
                     </Card>
-                    <h3>Wrong Answers:</h3>
+                    <br />
+                    <h3>Answer Selections:</h3>
                     <ListGroup horizontal>
                     {player.wrongAnswers[chart.id]!==undefined ? player.wrongAnswers[chart.id].map((ans) => (
-                        <ListGroup.Item key={ans+"wrong"}>
+                        <ListGroup.Item key={ans+"wrong"} variant="danger" action>
                             <MathComponent tex={`y = ${chart.renderChoices[ans]}`} display={false} />
                         </ListGroup.Item>
                     )) : <></>}
+                    {player.answers[chart.id]===chart.answerIndex ? (
+                        <ListGroup.Item key={chart.answerIndex+"right"} variant="success">
+                            <MathComponent tex={`y = ${chart.renderChoices[chart.answerIndex]}`} display={false} />
+                        </ListGroup.Item>
+                    ) : <></>}
+                    {player.wrongAnswers[chart.id]===undefined && player.answers[chart.id]!==chart.answerIndex ? (
+                        <ListGroup.Item key={chart.id+"none"} variant="warning">
+                            NONE
+                        </ListGroup.Item>
+                    ) : <></>}
                     </ListGroup>
                     </Tab.Pane>
                     ))}

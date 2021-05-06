@@ -6,7 +6,7 @@ import GameQuestion from './game-page/GameQuestion';
 import GameWaitingRoom from './game-page/GameWaitingRoom';
 import GameLeaderboard from './game-page/GameLeaderboard';
 import GameReview from './game-page/GameReview';
-import GameSettings from './game-page/GameSettings';
+import GameSettings from './game-page/game-components/GameSettings';
 
 import DevPanel from './DevPanel';
 
@@ -14,10 +14,10 @@ import {
     setPlayer,
     setAnswers,
 } from './GameFirebase';
-import GamePageHeader from './game-page/GamePageHeader';
+import GamePageHeader from './game-page/game-components/GamePageHeader';
 
 
-const GamePage = ({ questions, chartData, players, adminQuestionIndex, questionActive, waitingRoomIsOpen, playerAnswers, kickPlayer }) => {
+const GamePage = ({ questions, chartData, players, adminQuestionIndex, questionActive, waitingRoomIsOpen, playerAnswers, kickPlayer, pointEval }) => {
 
     // enum object of game webpage states relevant to the player
     const pageStates = {
@@ -82,7 +82,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, questionA
 
     React.useEffect(() => {
         // when progressing from the leaderboard page, logic for going to next question or review
-        if (adminQuestionIndex != null && (pageState === pageStates.WAITING_ROOM || adminQuestionIndex !== questionIndex)) {
+        if (adminQuestionIndex != null && (pageState === pageStates.WAITING_ROOM || (adminQuestionIndex !== questionIndex && questionIndex !== null))) {
             goToQuestion();
         }
         if (adminQuestionIndex === null && (pageState === pageStates.QUESTION || pageState === pageStates.LEADERBOARD)) {
@@ -92,27 +92,32 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, questionA
 
     const handleAnswerSubmit = async (a,t) => {
         // console.log(localPlayerObj.name, "answer:", a, "time:", t, "score:",chartData.maxScore*t);
-        const score = parseFloat(chartData.maxScore)*parseFloat(t)/parseFloat(chartData.questionTime);
-        let ans = {...localPlayerObj.answers};
-        ans[chartData.id] = a;
-        let was = localPlayerObj.wrongAnswers;
-        let tim = {...localPlayerObj.times};
-        tim[chartData.id] = chartData.questionTime-t;
-        let newAnswer = false;
-        let rightAnswer = a === chartData.answerIndex;
-        if (was[chartData.id] === undefined) { was[chartData.id] = []; newAnswer = true; }
-        if (!rightAnswer) { was[chartData.id].push(a); }
+        const points = parseFloat(chartData.maxScore)*parseFloat(t)/parseFloat(chartData.questionTime);
+        // update answer at question id to latest submission
+        let localAnswers = {...localPlayerObj.answers};
+        localAnswers[chartData.id] = a;
+        // initialize wrong answer array at question id if first submission
+        let firstAnswer = false;
+        let localWrongs = localPlayerObj.wrongAnswers;
+        if (localWrongs[chartData.id] === undefined) { localWrongs[chartData.id] = []; firstAnswer = true; }
+        // update wrong answer array if necessary
+        let rightAnswer = (a === chartData.answerIndex);
+        if (!rightAnswer) { localWrongs[chartData.id].push(a); }
+        // update submission time at question id
+        let localTimes = {...localPlayerObj.times};
+        localTimes[chartData.id] = chartData.questionTime-t;
+        // update player object for local and firebase storage
         const newPlayerObj = {
             ...localPlayerObj,
-            answers: ans,
-            wrongAnswers: was,
-            times: tim,
-            score: localPlayerObj.score + newAnswer&&rightAnswer?Math.floor(score):0,
+            answers: localAnswers,
+            wrongAnswers: localWrongs,
+            times: localTimes,
+            score: localPlayerObj.score + firstAnswer&&rightAnswer?Math.floor(points):0,
         };
-        console.log({...newPlayerObj})
-        setLocalPlayerObj({...newPlayerObj});
-        setPlayer({...newPlayerObj});
-
+        // console.log({...newPlayerObj})
+        setLocalPlayerObj({...newPlayerObj}); // local
+        setPlayer({...newPlayerObj});         // firebase
+        // update PlayerAnswers AdminVar for progress bars
         let newAnswers = playerAnswers;
         newAnswers[chartData.id][localPlayerObj.id] = a;
         setAnswers({...newAnswers});
@@ -145,7 +150,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, questionA
             // console.log("local player not in playersDB", players, localPlayerObj);
             setPageState(pageStates.MAIN_MENU);
             handleShowKick();
-            wipePlayer();
+            if (localPlayerObj.name != null) { wipePlayer(); }
         }
     }, [players, pageStates.MAIN_MENU]);
 
@@ -217,6 +222,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, questionA
         <GamePageHeader
             player={localPlayerObj}
             goToMainMenu={() => {wipePlayer(); goToMainMenu();}}
+            settings={SettingsComponent}
         />
     );
 
@@ -246,7 +252,6 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, questionA
                 <GameWaitingRoom
                     displayName={localPlayerObj.name}
                     playersList={players}
-                    settings={SettingsComponent}
                 />
             );
             break;
@@ -259,7 +264,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, questionA
                     timer={timer}
                     endQuestion={goToLeaderboard}
                     selectAnswer={handleAnswerSubmit}
-                    settings={SettingsComponent}
+                    pointEval={pointEval}
                 />
             );
             break;
@@ -269,7 +274,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, questionA
                     player={localPlayerObj}
                     chartData={chartData}
                     topPlayers={topPlayers}
-                    settings={SettingsComponent}
+                    pointEval={pointEval}
                 />
             );
             break;
@@ -279,7 +284,7 @@ const GamePage = ({ questions, chartData, players, adminQuestionIndex, questionA
                     player={localPlayerObj}
                     chartsData={questions}
                     topPlayers={topPlayers}
-                    settings={SettingsComponent}
+                    pointEval={pointEval}
                 />
             );
             break;
@@ -305,6 +310,7 @@ GamePage.propTypes = {
     waitingRoomIsOpen: PropTypes.bool.isRequired,
     playerAnswers: PropTypes.object.isRequired,
     kickPlayer: PropTypes.func.isRequired,
+    pointEval: PropTypes.func.isRequired,
 };
 
 export default GamePage;

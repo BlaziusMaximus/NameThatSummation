@@ -27,6 +27,7 @@ const AdminReview = ({ chartsData, playersList, endGame, playerAnswers }) => {
         <Button onClick={endGame} id="cleargame" variant="secondary" size="lg" block>End Game</Button>
 
         <Container fluid>
+        <br />
         <Row>
             <Col xs={8}>
             <Tab.Container id="list-group-tabs-example" defaultActiveKey={chartsData[0].id}>

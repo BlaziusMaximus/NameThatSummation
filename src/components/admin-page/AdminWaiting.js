@@ -6,12 +6,27 @@ import {
 } from 'react-bootstrap';
 
 
-const AdminWaiting = ({ playersList, startGame, quitGame, kickPlayer }) => {
+const AdminWaiting = ({ playersList, startGame, quitGame, kickPlayer, noPlayers }) => {
 
     return (<>
 
-        <Button onClick={quitGame} id="startgame" variant="danger" size="lg" block>Quit Game</Button>
-        <Button onClick={startGame} id="startgame" variant="success" size="lg" block>Start Game</Button>
+        <Button
+            onClick={quitGame}
+            id="startgame"
+            variant="danger"
+            size="lg"
+            block>
+                Quit Game
+        </Button>
+        <Button
+            onClick={startGame}
+            id="startgame"
+            variant="success"
+            size="lg"
+            block
+            disabled={noPlayers}>
+                Start Game
+        </Button>
 
         <Table striped bordered hover>
             <thead>
@@ -40,6 +55,7 @@ AdminWaiting.propTypes = {
     startGame: PropTypes.func.isRequired,
     quitGame: PropTypes.func.isRequired,
     kickPlayer: PropTypes.func.isRequired,
+    noPlayers: PropTypes.bool.isRequired,
 }
 
 export default AdminWaiting;

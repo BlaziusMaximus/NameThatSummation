@@ -65,7 +65,7 @@ const AdminPlaying = ({ quitGame, prevQuestion, nextQuestion, endQuestion, quest
                 variant="primary"
                 size="lg"
                 block>
-                    Next Question
+                    {localGameState.questionIndex+1<questions.length?"Next Question":"Review"}
             </Button>
         </ButtonGroup>
 

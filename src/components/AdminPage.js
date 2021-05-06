@@ -108,6 +108,7 @@ const AdminPage = ({ pageStates, pageState, playersList, localGameState, setLoca
                 startGame={startGame}
                 quitGame={clearGame}
                 kickPlayer={kickPlayer}
+                noPlayers={playersList.length===0}
             />
         </> : <></>}
 
