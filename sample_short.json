@@ -1,0 +1,11 @@
+[
+    {
+        "xStart": 0,
+        "xEnd": 10,
+        "xInc": 1,
+        "renderChoices": [ "x", "x^2", "log_{2} x", "\\sqrt{x}" ],
+        "evalChoices": [ "x", "x^2", "logn(x,2)", "sqrt(x)" ],
+        "answerIndex": 1,
+        "questionTime": 60
+    }
+]

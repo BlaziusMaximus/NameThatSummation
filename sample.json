@@ -1,0 +1,110 @@
+[
+    {
+        "xStart": 0,
+        "xEnd": 10,
+        "xInc": 1,
+        "renderChoices": [ "x", "x^2", "log_{2} x", "\\sqrt{x}" ],
+        "evalChoices": [ "x", "x^2", "logn(x,2)", "sqrt(x)" ],
+        "answerIndex": 1,
+        "questionTime": 15
+    },
+    {
+        "xStart": 0,
+        "xEnd": 20,
+        "xInc": 1,
+        "renderChoices": [ "3x", "log_{3} x", "4x^2", "x^3" ],
+        "evalChoices": [ "3x", "logn(x,3)", "4*(x^2)", "x^3" ],
+        "answerIndex": 0,
+        "questionTime": 15
+    },
+    {
+        "xStart": 0,
+        "xEnd": 20,
+        "xInc": 1,
+        "renderChoices": [ "4x", "log_{4} x", "5x^2", "x^5" ],
+        "evalChoices": [ "4x", "logn(x,4)", "5*(x^2)", "x^4" ],
+        "answerIndex": 2,
+        "questionTime": 15
+    },
+    {
+        "xStart": 0,
+        "xEnd": 20,
+        "xInc": 1,
+        "renderChoices": [ "5x", "log_{2} x", "3x^2", "x^6" ],
+        "evalChoices": [ "5x", "log_(x,2)", "3*(x^2)", "x^6" ],
+        "answerIndex": 3,
+        "questionTime": 15
+    },
+    {
+        "xStart": 0,
+        "xEnd": 10,
+        "xInc": 1,
+        "renderChoices": [ "x", "x^2", "log_{2} x", "\\sqrt{x}" ],
+        "evalChoices": [ "x", "x^2", "logn(x,2)", "sqrt(x)" ],
+        "answerIndex": 1,
+        "questionTime": 15
+    },
+    {
+        "xStart": 0,
+        "xEnd": 20,
+        "xInc": 1,
+        "renderChoices": [ "3x", "log_{3} x", "4x^2", "x^3" ],
+        "evalChoices": [ "3x", "logn(x,3)", "4*(x^2)", "x^3" ],
+        "answerIndex": 0,
+        "questionTime": 15
+    },
+    {
+        "xStart": 0,
+        "xEnd": 20,
+        "xInc": 1,
+        "renderChoices": [ "4x", "log_{4} x", "5x^2", "x^5" ],
+        "evalChoices": [ "4x", "logn(x,4)", "5*(x^2)", "x^4" ],
+        "answerIndex": 2,
+        "questionTime": 15
+    },
+    {
+        "xStart": 0,
+        "xEnd": 20,
+        "xInc": 1,
+        "renderChoices": [ "5x", "log_{2} x", "3x^2", "x^6" ],
+        "evalChoices": [ "5x", "log_(x,2)", "3*(x^2)", "x^6" ],
+        "answerIndex": 3,
+        "questionTime": 15
+    },
+    {
+        "xStart": 0,
+        "xEnd": 10,
+        "xInc": 1,
+        "renderChoices": [ "x", "x^2", "log_{2} x", "\\sqrt{x}" ],
+        "evalChoices": [ "x", "x^2", "logn(x,2)", "sqrt(x)" ],
+        "answerIndex": 1,
+        "questionTime": 15
+    },
+    {
+        "xStart": 0,
+        "xEnd": 20,
+        "xInc": 1,
+        "renderChoices": [ "3x", "log_{3} x", "4x^2", "x^3" ],
+        "evalChoices": [ "3x", "logn(x,3)", "4*(x^2)", "x^3" ],
+        "answerIndex": 0,
+        "questionTime": 15
+    },
+    {
+        "xStart": 0,
+        "xEnd": 20,
+        "xInc": 1,
+        "renderChoices": [ "4x", "log_{4} x", "5x^2", "x^5" ],
+        "evalChoices": [ "4x", "logn(x,4)", "5*(x^2)", "x^4" ],
+        "answerIndex": 2,
+        "questionTime": 15
+    },
+    {
+        "xStart": 0,
+        "xEnd": 20,
+        "xInc": 1,
+        "renderChoices": [ "5x", "log_{2} x", "3x^2", "x^6" ],
+        "evalChoices": [ "5x", "log_(x,2)", "3*(x^2)", "x^6" ],
+        "answerIndex": 3,
+        "questionTime": 15
+    }
+]
