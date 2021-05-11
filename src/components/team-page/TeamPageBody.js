@@ -16,10 +16,24 @@ const TeamPageBody = () => {
             <Row><p>Professor Meetings (recitation): Thursday 3:30-4:30PM</p></Row>
             <Row><p>Team Meetings: Monday @ 6:00PM</p></Row>
 
+            <br />
+
+            <Row><h3>DESIGN DOCUMENT</h3></Row>
             <Row>
-                <div style={{ width: '8.5in', height: 'auto' }}>
+                <div style={{ width: '8.5in', height: 'auto', border: '1px solid black' }}>
                     <ResponsiveEmbed aspectRatio="1by1">
                         <iframe title="Design Doc" src="https://docs.google.com/document/d/e/2PACX-1vR3nIMv9RltRskz5HY8NZmztMdaF0d1Mfb3Hda5n9-c8VyV_3afAFM-4RU_UVSMI2WajPdJPZLxVgmS/pub?embedded=true" />
+                    </ResponsiveEmbed>
+                </div>
+            </Row>
+
+            <br /><br />
+
+            <Row><h3>HANDOFF INSTRUCTIONS</h3></Row>
+            <Row>
+                <div style={{ width: '8.5in', height: 'auto', border: '1px solid black' }}>
+                    <ResponsiveEmbed aspectRatio="1by1">
+                        <iframe title="Handoff" src="https://docs.google.com/document/d/e/2PACX-1vSkIoTyeGX_JNu12iifmy06HV_EEA10F3JZxPN_tplZJK8ZmrRIeNn0zR_-oXqQH9ohU72bdsOJsBAt/pub?embedded=true" />
                     </ResponsiveEmbed>
                 </div>
             </Row>
